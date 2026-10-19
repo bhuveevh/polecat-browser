@@ -41,6 +41,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPlainTextEdit>
+#include <QPushButton>
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QShortcut>
