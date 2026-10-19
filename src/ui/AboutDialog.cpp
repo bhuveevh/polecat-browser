@@ -15,7 +15,7 @@
 #include <QSysInfo>
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <QWebEngineVersion>
+#include <QtWebEngineCore/qtwebenginecoreglobal.h>
 
 #ifndef POLECAT_VERSION
 #define POLECAT_VERSION "1.0.0"
@@ -70,7 +70,7 @@ AboutDialog::AboutDialog(QWidget *parent)
         tr("Version %1 · Qt %2 · Qt WebEngine (Chromium %3)")
             .arg(QStringLiteral(POLECAT_VERSION),
                  QString::fromLatin1(qVersion()),
-                 QString::fromLatin1(QWebEngineVersion::version())),
+                 QString::fromLatin1(qWebEngineVersion())),
         aboutPage);
     versionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
@@ -156,7 +156,7 @@ QString AboutDialog::diagnosticText() const
         "---- recent log ----\n%9")
         .arg(QStringLiteral(POLECAT_VERSION),
              QString::fromLatin1(qVersion()),
-             QString::fromLatin1(QWebEngineVersion::version()),
+             QString::fromLatin1(qWebEngineVersion()),
              QSysInfo::productType(),
              QSysInfo::prettyProductName(),
              QSysInfo::kernelVersion(),
