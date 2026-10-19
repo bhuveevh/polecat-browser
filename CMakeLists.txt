@@ -6,6 +6,15 @@ project(polecat-browser
     HOMEPAGE_URL ""
     LANGUAGES CXX)
 
+# A build number can be supplied (CI passes the run number) so every build has
+# a distinct version, e.g. 1.0.0.42. Without it the plain project version is used.
+set(POLECAT_BUILD_NUMBER "" CACHE STRING "Build number appended to the version")
+set(POLECAT_VERSION "${PROJECT_VERSION}")
+if(POLECAT_BUILD_NUMBER)
+    set(POLECAT_VERSION "${PROJECT_VERSION}.${POLECAT_BUILD_NUMBER}")
+endif()
+message(STATUS "Polecat Browser version: ${POLECAT_VERSION}")
+
 # ---------------------------------------------------------------------------
 # Language / build settings
 # ---------------------------------------------------------------------------
@@ -37,6 +46,7 @@ find_package(Qt6 6.4 REQUIRED COMPONENTS
     Network
     Sql
     PrintSupport
+    Svg
     WebEngineWidgets
     WebEngineCore
 )
@@ -165,7 +175,7 @@ endif()
 target_include_directories(polecat-browser PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_definitions(polecat-browser PRIVATE
-    POLECAT_VERSION="${PROJECT_VERSION}"
+    POLECAT_VERSION="${POLECAT_VERSION}"
     POLECAT_APP_ID="org.opentiaos.PolecatBrowser"
     POLECAT_DEVELOPER="OpentiaOS Developer"
     POLECAT_DEVELOPER_EMAIL="opentiaos@gmail.com"
@@ -178,6 +188,7 @@ target_link_libraries(polecat-browser PRIVATE
     Qt6::Network
     Qt6::Sql
     Qt6::PrintSupport
+    Qt6::Svg
     Qt6::WebEngineWidgets
     Qt6::WebEngineCore
 )
@@ -218,7 +229,7 @@ endif()
 set(CPACK_PACKAGE_NAME "polecat-browser")
 set(CPACK_PACKAGE_VENDOR "OpentiaOS Developer")
 set(CPACK_PACKAGE_CONTACT "OpentiaOS Developer <opentiaos@gmail.com>")
-set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VERSION "${POLECAT_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fast, privacy-focused web browser for Debian Linux")
 set(CPACK_PACKAGE_HOMEPAGE_URL "")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")

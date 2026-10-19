@@ -217,6 +217,7 @@ void BrowserWindow::buildLayout()
     connect(m_nav, &NavigationToolBar::readerRequested, this, &BrowserWindow::onReaderRequested);
     connect(m_nav, &NavigationToolBar::menuRequested, this, &BrowserWindow::showMainMenu);
     connect(m_nav, &NavigationToolBar::submitRequested, this, &BrowserWindow::onSubmitAddress);
+    connect(m_nav->addressBar(), &AddressBar::siteInfoRequested, this, &BrowserWindow::showSiteInfo);
 
     connect(m_tabBar, &TabBar::newTabRequested, this, &BrowserWindow::onNewTabRequested);
     connect(m_tabBar, &TabBar::closeTabRequested, this, &BrowserWindow::onCloseTabRequested);
@@ -256,6 +257,8 @@ void BrowserWindow::wireTabManager()
             return;
         connect(tab->view(), &WebView::contextMenuRequested,
                 this, &BrowserWindow::showContextMenu);
+        // Lets the New Tab page show the user's bookmarks.
+        tab->view()->setBookmarks(m_context.bookmarks);
         connect(tab->view(), &QWebEngineView::loadProgress,
                 this, &BrowserWindow::onLoadProgress);
         if (auto *page = tab->page()) {
@@ -309,7 +312,7 @@ void BrowserWindow::buildMenus()
     newTab->setShortcut(QKeySequence(QStringLiteral("Ctrl+T")));
     connect(newTab, &QAction::triggered, this, &BrowserWindow::onNewTabRequested);
 
-    auto *newWindow = m_mainMenu->addAction(tr("New Window"));
+    auto *newWindow = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("new-window")), tr("New Window"));
     newWindow->setShortcut(QKeySequence(QStringLiteral("Ctrl+N")));
     connect(newWindow, &QAction::triggered, this, [this]() { emit newWindowRequested(false); });
 
@@ -346,21 +349,21 @@ void BrowserWindow::buildMenus()
     find->setShortcut(QKeySequence(QStringLiteral("Ctrl+F")));
     connect(find, &QAction::triggered, this, &BrowserWindow::openFindInPage);
 
-    auto *zoomMenu = m_mainMenu->addMenu(tr("Zoom"));
-    zoomMenu->addAction(tr("Zoom In"), this, &BrowserWindow::zoomIn);
-    zoomMenu->addAction(tr("Zoom Out"), this, &BrowserWindow::zoomOut);
+    auto *zoomMenu = m_mainMenu->addMenu(IconLoader::icon(QStringLiteral("zoom-in")), tr("Zoom"));
+    zoomMenu->addAction(IconLoader::icon(QStringLiteral("zoom-in")), tr("Zoom In"), this, &BrowserWindow::zoomIn);
+    zoomMenu->addAction(IconLoader::icon(QStringLiteral("zoom-out")), tr("Zoom Out"), this, &BrowserWindow::zoomOut);
     zoomMenu->addAction(tr("Reset Zoom"), this, &BrowserWindow::zoomReset);
 
-    auto *fullScreen = m_mainMenu->addAction(tr("Full Screen"));
+    auto *fullScreen = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("fullscreen")), tr("Full Screen"));
     fullScreen->setShortcut(QKeySequence(Qt::Key_F11));
     connect(fullScreen, &QAction::triggered, this, [this]() { setFullScreenInternal(!m_fullScreen); });
 
     m_mainMenu->addSeparator();
 
-    auto *print = m_mainMenu->addAction(tr("Print…"), this, &BrowserWindow::printPage);
-    auto *savePdf = m_mainMenu->addAction(tr("Save as PDF…"), this, &BrowserWindow::savePageAsPdf);
-    auto *savePage = m_mainMenu->addAction(tr("Save Page…"), this, &BrowserWindow::saveCurrentPage);
-    auto *screenshot = m_mainMenu->addAction(tr("Take Screenshot…"), this, [this]() {
+    auto *print = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("print")), tr("Print…"), this, &BrowserWindow::printPage);
+    auto *savePdf = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("save")), tr("Save as PDF…"), this, &BrowserWindow::savePageAsPdf);
+    auto *savePage = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("save")), tr("Save Page…"), this, &BrowserWindow::saveCurrentPage);
+    auto *screenshot = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("info")), tr("Take Screenshot…"), this, [this]() {
         if (auto *tab = m_tabs->currentTab()) {
             const QPixmap pix = tab->view()->grab();
             const QString path = QFileDialog::getSaveFileName(
@@ -373,7 +376,7 @@ void BrowserWindow::buildMenus()
 
     m_mainMenu->addSeparator();
 
-    auto *reader = m_mainMenu->addAction(tr("Reader Mode"), this, &BrowserWindow::onReaderRequested);
+    auto *reader = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("reader")), tr("Reader Mode"), this, &BrowserWindow::onReaderRequested);
     reader->setCheckable(true);
 
     auto *readingList = m_mainMenu->addAction(tr("Add to Reading List"), this, [this]() {
@@ -386,8 +389,8 @@ void BrowserWindow::buildMenus()
     });
     Q_UNUSED(readingList);
 
-    auto *viewSrc = m_mainMenu->addAction(tr("View Page Source"), this, &BrowserWindow::viewSource);
-    auto *devTools = m_mainMenu->addAction(tr("Developer Tools"), this, &BrowserWindow::openDevTools);
+    auto *viewSrc = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("code")), tr("View Page Source"), this, &BrowserWindow::viewSource);
+    auto *devTools = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("code")), tr("Developer Tools"), this, &BrowserWindow::openDevTools);
     devTools->setShortcut(QKeySequence(QStringLiteral("Ctrl+Shift+I")));
 
     m_mainMenu->addSeparator();
@@ -887,11 +890,56 @@ void BrowserWindow::openFindInPage()
 {
     if (auto *tab = m_tabs->currentTab())
         m_findBar->setTarget(tab->view());
-    // Position the find bar as a floating strip near the bottom of the window.
-    m_findBar->setGeometry(0, height() - m_findBar->sizeHint().height() - 24, width(),
-                           m_findBar->sizeHint().height());
-    m_findBar->raise();
     m_findBar->activate();
+    positionFindBar();
+}
+
+void BrowserWindow::positionFindBar()
+{
+    // A floating card at the top-right, just under the toolbar (Chrome-like),
+    // instead of a full-width strip over the page content.
+    if (!m_findBar || !m_nav)
+        return;
+    const int top = m_nav->mapTo(this, QPoint(0, m_nav->height())).y() + 8;
+    m_findBar->repositionToParent(top);
+}
+
+void BrowserWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    if (m_findBar && m_findBar->isVisible())
+        positionFindBar();
+}
+
+void BrowserWindow::showSiteInfo()
+{
+    BrowserTab *tab = m_tabs->currentTab();
+    if (!tab)
+        return;
+    const QUrl url = tab->url();
+    if (url.isEmpty() || url.scheme() == QLatin1String("about"))
+        return;
+
+    AddressBar *bar = m_nav->addressBar();
+    QMenu menu(this);
+    QAction *head = menu.addAction(IconLoader::icon(bar->isSecure() ? QStringLiteral("secure")
+                                                                   : QStringLiteral("insecure")),
+                                   bar->isSecure() ? tr("Connection is secure")
+                                                   : tr("Connection is not secure"));
+    head->setEnabled(false);
+    QAction *host = menu.addAction(url.host());
+    host->setEnabled(false);
+    menu.addSeparator();
+    QAction *perms = menu.addAction(tr("Clear permissions for this site"));
+    connect(perms, &QAction::triggered, this, [this, url]() {
+        if (m_context.permissions)
+            m_context.permissions->clearHost(url.host());
+    });
+    QAction *settings = menu.addAction(tr("Site settings…"));
+    connect(settings, &QAction::triggered, this, [this]() {
+        openUrl(QUrl(QStringLiteral("about:settings")));
+    });
+    menu.exec(QCursor::pos());
 }
 
 void BrowserWindow::onLoadProgress(int progress)

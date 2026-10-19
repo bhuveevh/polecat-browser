@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QShowEvent>
 #include <QToolButton>
 #include <QWebEngineFindTextResult>
 #include <QWebEnginePage>
@@ -22,7 +23,10 @@ FindBar::FindBar(QWidget *parent)
     layout->setContentsMargins(8, 4, 8, 4);
     layout->setSpacing(6);
 
-    auto *label = new QLabel(tr("Find:"), this);
+    // A modern search glyph instead of the old "Find:" text label.
+    auto *label = new QLabel(this);
+    label->setObjectName(QStringLiteral("findGlyph"));
+    label->setPixmap(IconLoader::icon(QStringLiteral("find")).pixmap(16, 16));
 
     m_field = new QLineEdit(this);
     m_field->setPlaceholderText(tr("Find in page"));
@@ -51,10 +55,10 @@ FindBar::FindBar(QWidget *parent)
 
     layout->addWidget(label);
     layout->addWidget(m_field, 1);
+    layout->addWidget(m_status);
     layout->addWidget(caseBox);
     layout->addWidget(prev);
     layout->addWidget(next);
-    layout->addWidget(m_status);
     layout->addWidget(close);
 
     connect(m_field, &QLineEdit::returnPressed, this, &FindBar::findNext);
@@ -86,6 +90,27 @@ void FindBar::activate()
     show();
     m_field->setFocus(Qt::ShortcutFocusReason);
     m_field->selectAll();
+}
+
+void FindBar::repositionToParent(int topOffset)
+{
+    m_topOffset = topOffset;
+    QWidget *p = parentWidget();
+    if (!p)
+        return;
+    adjustSize();
+    const int margin = 14;
+    int x = p->width() - width() - margin;
+    if (x < margin)
+        x = margin;
+    move(x, qMax(margin, topOffset));
+    raise();
+}
+
+void FindBar::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    repositionToParent(m_topOffset);
 }
 
 void FindBar::deactivate()

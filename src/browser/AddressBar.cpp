@@ -16,12 +16,14 @@ AddressBar::AddressBar(QWidget *parent)
     : QLineEdit(parent)
 {
     setClearButtonEnabled(true);
-    setPlaceholderText(tr("Search with DuckDuckGo or enter address"));
+    setPlaceholderText(tr("Search anything with Polecat Browser…   Type Here"));
     setAccessibleName(tr("Address and search bar"));
     setMinimumWidth(240);
 
+    // Leading site-security indicator (lock / not-secure), like Chrome/Firefox.
     m_securityAction = addAction(IconLoader::icon(QStringLiteral("insecure")), QLineEdit::LeadingPosition);
-    m_securityAction->setToolTip(tr("Connection information"));
+    m_securityAction->setToolTip(tr("Site information"));
+    connect(m_securityAction, &QAction::triggered, this, &AddressBar::siteInfoRequested);
 
     // A thin progress underline sits at the bottom edge of the field.
     m_progress = new QProgressBar(this);
@@ -53,14 +55,14 @@ void AddressBar::setSecurityState(bool secure, bool internal)
     m_secure = secure;
     m_internal = internal;
     if (internal) {
-        m_securityAction->setIcon(IconLoader::icon(QStringLiteral("secure")));
-        m_securityAction->setToolTip(tr("Internal page"));
+        m_securityAction->setIcon(IconLoader::icon(QStringLiteral("info")));
+        m_securityAction->setToolTip(tr("Polecat internal page"));
     } else if (secure) {
         m_securityAction->setIcon(IconLoader::icon(QStringLiteral("secure")));
-        m_securityAction->setToolTip(tr("Secure connection (HTTPS)"));
+        m_securityAction->setToolTip(tr("Secure connection — click for site information"));
     } else {
         m_securityAction->setIcon(IconLoader::icon(QStringLiteral("insecure")));
-        m_securityAction->setToolTip(tr("Not secure"));
+        m_securityAction->setToolTip(tr("Not secure — click for site information"));
     }
 }
 

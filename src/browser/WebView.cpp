@@ -1,15 +1,21 @@
 #include "browser/WebView.h"
 
+#include "bookmarks/BookmarkManager.h"
 #include "browser/WebPage.h"
 #include "settings/SettingsManager.h"
 #include "utils/Logging.h"
+#include "utils/Paths.h"
 
+#include <QApplication>
 #include <QContextMenuEvent>
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMenu>
+#include <QPalette>
+#include <QRegularExpression>
 #include <QVariant>
 #include <QWebEngineContextMenuRequest>
 #include <QWebEngineProfile>
@@ -51,10 +57,17 @@ void WebView::loadUrl(const QUrl &url)
     if (url.scheme() == QLatin1String("about")) {
         const QString page = url.path().toLower();
         QString resource;
-        if (page == QLatin1String("newtab"))
-            resource = QStringLiteral(":/html/newtab.html");
-        else if (page == QLatin1String("private"))
+        if (page == QLatin1String("private"))
             resource = QStringLiteral(":/html/privatenote.html");
+
+        if (page == QLatin1String("newtab")) {
+            const QString html = buildNewTabHtml();
+            if (!html.isEmpty()) {
+                setHtml(html, url);
+                return;
+            }
+            resource = QStringLiteral(":/html/newtab.html");
+        }
 
         if (page == QLatin1String("settings")) {
             const QString html = buildSettingsHtml();
@@ -77,6 +90,60 @@ void WebView::loadUrl(const QUrl &url)
         }
     }
     setUrl(url);
+}
+
+QString WebView::buildNewTabHtml() const
+{
+    QFile f(QStringLiteral(":/html/newtab.html"));
+    if (!f.open(QIODevice::ReadOnly))
+        return QString();
+    QString html = QString::fromUtf8(f.readAll());
+
+    // Wallpaper (bundled SVG, inlined so the page needs no extra requests).
+    QString wallpaper;
+    QFile w(QStringLiteral(":/wallpaper.svg"));
+    if (w.open(QIODevice::ReadOnly)) {
+        wallpaper = QString::fromUtf8(w.readAll());
+        wallpaper.remove(QRegularExpression(QStringLiteral("<\\?xml[^>]*\\?>")));
+        wallpaper.replace(QStringLiteral("class=\"light\""), QString());
+    }
+
+    // Bookmarks: top level, plus one level inside folders.
+    QJsonArray arr;
+    auto addBookmark = [&arr](const Bookmark &b) {
+        QJsonObject o;
+        o.insert(QStringLiteral("title"), b.title.isEmpty() ? b.url.host() : b.title);
+        o.insert(QStringLiteral("url"), b.url.toString());
+        o.insert(QStringLiteral("favicon"), b.favicon);
+        arr.append(o);
+    };
+    if (m_bookmarks) {
+        for (const Bookmark &b : m_bookmarks->children(-1)) {
+            if (b.isFolder()) {
+                for (const Bookmark &k : m_bookmarks->children(b.id))
+                    addBookmark(k);
+            } else {
+                addBookmark(b);
+            }
+        }
+    }
+
+    // User name, as a JSON string literal.
+    QJsonArray tmp;
+    tmp.append(Paths::userDisplayName());
+    QString userJson = QString::fromUtf8(QJsonDocument(tmp).toJson(QJsonDocument::Compact));
+    userJson = userJson.mid(1, userJson.length() - 2); // strip the surrounding []
+
+    // Dark mode follows the palette the theme manager applied.
+    const bool dark = QApplication::palette().color(QPalette::Window).lightness() < 128;
+
+    html.replace(QStringLiteral("__POLECAT_WALLPAPER__"), wallpaper);
+    html.replace(QStringLiteral("__POLECAT_USER__"), userJson);
+    html.replace(QStringLiteral("__POLECAT_BOOKMARKS__"),
+                 QString::fromUtf8(QJsonDocument(arr).toJson(QJsonDocument::Compact)));
+    html.replace(QStringLiteral("__POLECAT_DARK__"), dark ? QStringLiteral("true")
+                                                          : QStringLiteral("false"));
+    return html;
 }
 
 QString WebView::buildSettingsHtml() const

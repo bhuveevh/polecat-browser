@@ -70,6 +70,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void changeEvent(QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     // Watches all mouse presses so the frameless window can be resized from any
     // edge (delegated to the compositor via startSystemResize()).
     bool eventFilter(QObject *watched, QEvent *event) override;
@@ -89,6 +90,7 @@ private slots:
     void onReaderRequested();
     void showMainMenu();
     void showProfileMenu();
+    void showSiteInfo();
     void showContextMenu(QMenu *menu, QWebEngineContextMenuRequest *request,
                          const QPoint &globalPos);
     void onInternalCommand(const QUrl &url);
@@ -109,6 +111,7 @@ private:
     void updateNavigationState(BrowserTab *tab);
     void applySettings();
     void openFindInPage();
+    void positionFindBar();
     void setFullScreenInternal(bool on);
     void toggleMaximize();
     Qt::Edges resizeEdgesAt(const QPoint &globalPos) const;

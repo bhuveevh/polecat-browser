@@ -8,6 +8,7 @@ Build-Depends: debhelper-compat (= 13),
                qt6-base-dev-tools,
                qt6-webengine-dev (>= 6.4),
                qt6-tools-dev,
+               qt6-svg-dev,
                libqt6sql6-sqlite
 Standards-Version: 4.6.2
 Rules-Requires-Root: no
@@ -26,7 +27,7 @@ Depends: ${shlibs:Depends},
          libqt6webenginecore6 (>= 6.4),
          libqt6webenginewidgets6 (>= 6.4),
          libqt6svg6 (>= 6.4)
-Recommends: qt6-wayland
+Recommends: qt6-wayland, qt6-svg-plugins
 Description: fast and privacy-focused web browser for Debian Linux
  Polecat Browser is a modern web browser built with Qt and Qt WebEngine.
  It provides tabbed browsing, multiple windows, bookmarks, history,

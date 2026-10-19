@@ -38,6 +38,7 @@ jobs:
             qt6-base-dev-tools \
             qt6-webengine-dev \
             qt6-tools-dev \
+            qt6-svg-dev \
             libqt6sql6-sqlite \
             libqt6svg6 \
             file
@@ -46,7 +47,8 @@ jobs:
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DPOLECAT_BUILD_TESTS=OFF
+            -DPOLECAT_BUILD_TESTS=OFF \
+            -DPOLECAT_BUILD_NUMBER="${{ github.run_number }}"
 
       - name: Build
         run: cmake --build build --parallel "$(nproc)"

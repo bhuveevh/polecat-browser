@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>icons/org.opentiaos.PolecatBrowser.svg</file>
+        <file>wallpaper.svg</file>
         <file>icons/ms/account_circle.svg</file>
         <file>icons/ms/add.svg</file>
         <file>icons/ms/arrow_back.svg</file>

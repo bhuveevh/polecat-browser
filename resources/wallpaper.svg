@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1920 1080"
+     preserveAspectRatio="xMidYMid slice"
+     class="light">
+
+  <style>
+    .dark { display: none; }
+    .light { display: inline; }
+  </style>
+
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="#c7e8df"/>
+  <circle cx="1510" cy="205" r="66" fill="#ffe9ae"/>
+
+  <!-- Distant hills -->
+  <path d="M0 640 Q280 420 560 620 T1120 580 T1680 590 T2240 620
+           V1080 H0Z" fill="#93c2a4"/>
+  <path d="M0 750 Q300 560 610 700 T1240 670 T1840 680 T2300 720
+           V1080 H0Z" fill="#659779"/>
+  <path d="M0 820 Q440 730 850 810 T1640 790 T2300 820 V1080 H0Z"
+        fill="#3f7058"/>
+
+  <!-- Small distant trees -->
+  <g fill="#4c805f">
+    <path d="M200 750 250 620l50 130h-31l48 75H183l48-75Z"/>
+    <path d="M385 755 430 640l45 115h-28l43 68H370l43-68Z"/>
+    <path d="M1480 750 1530 620l50 130h-31l48 75h-134l48-75Z"/>
+    <path d="M1680 760 1725 645l45 115h-28l43 68h-120l43-68Z"/>
+  </g>
+
+  <!-- Foreground trees -->
+  <g fill="#315d4b">
+    <path d="M-60 1000 65 690l125 310h-78l115 175H-102l115-175Z"/>
+    <path d="M195 1030 300 770l105 260h-65l98 145H162l98-145Z"/>
+    <path d="M1650 1020 1760 745l110 275h-68l103 155h-290l103-155Z"/>
+    <path d="M1870 1000 1985 710l115 290h-72l108 165h-287l108-165Z"/>
+  </g>
+
+  <!-- Gentle flower stems and leaves -->
+  <g fill="none" stroke="#244f40" stroke-width="7" stroke-linecap="round">
+    <path d="M530 900q-5-55 8-108m-5 75q-30-24-47-19m50-14q27-23 45-19"/>
+    <path d="M720 930q-7-48 4-91m-3 60q-24-18-39-14m41-13q22-19 38-15"/>
+    <path d="M1345 910q-4-50 7-96m-4 66q-25-20-42-16m44-14q23-20 40-16"/>
+  </g>
+  <g fill="#6ba17a">
+    <ellipse cx="486" cy="848" rx="23" ry="10" transform="rotate(28 486 848)"/>
+    <ellipse cx="581" cy="834" rx="23" ry="10" transform="rotate(-28 581 834)"/>
+    <ellipse cx="682" cy="885" rx="19" ry="8" transform="rotate(28 682 885)"/>
+    <ellipse cx="762" cy="870" rx="19" ry="8" transform="rotate(-28 762 870)"/>
+    <ellipse cx="1309" cy="851" rx="21" ry="9" transform="rotate(28 1309 851)"/>
+    <ellipse cx="1377" cy="837" rx="21" ry="9" transform="rotate(-28 1377 837)"/>
+  </g>
+
+  <!-- Flowers -->
+  <g>
+    <g transform="translate(538 784)">
+      <circle cx="0" cy="-15" r="10" fill="#fff7e8"/>
+      <circle cx="14" cy="-5" r="10" fill="#fff7e8"/>
+      <circle cx="9" cy="12" r="10" fill="#fff7e8"/>
+      <circle cx="-9" cy="12" r="10" fill="#fff7e8"/>
+      <circle cx="-14" cy="-5" r="10" fill="#fff7e8"/>
+      <circle r="7" fill="#f2bd66"/>
+    </g>
+    <g transform="translate(724 824)">
+      <circle cx="0" cy="-13" r="8" fill="#f8d9e3"/>
+      <circle cx="12" cy="-4" r="8" fill="#f8d9e3"/>
+      <circle cx="7" cy="10" r="8" fill="#f8d9e3"/>
+      <circle cx="-7" cy="10" r="8" fill="#f8d9e3"/>
+      <circle cx="-12" cy="-4" r="8" fill="#f8d9e3"/>
+      <circle r="6" fill="#f2bd66"/>
+    </g>
+    <g transform="translate(1350 768)">
+      <circle cx="0" cy="-14" r="9" fill="#fff7e8"/>
+      <circle cx="13" cy="-4" r="9" fill="#fff7e8"/>
+      <circle cx="8" cy="11" r="9" fill="#fff7e8"/>
+      <circle cx="-8" cy="11" r="9" fill="#fff7e8"/>
+      <circle cx="-13" cy="-4" r="9" fill="#fff7e8"/>
+      <circle r="6" fill="#f2bd66"/>
+    </g>
+  </g>
+
+  <!-- Dark version -->
+  <g class="dark">
+    <rect width="1920" height="1080" fill="#18283b"/>
+    <circle cx="1510" cy="205" r="60" fill="#e4eaff"/>
+
+    <path d="M0 640 Q280 420 560 620 T1120 580 T1680 590 T2240 620
+             V1080 H0Z" fill="#354e5a"/>
+    <path d="M0 750 Q300 560 610 700 T1240 670 T1840 680 T2300 720
+             V1080 H0Z" fill="#293f49"/>
+    <path d="M0 820 Q440 730 850 810 T1640 790 T2300 820 V1080 H0Z"
+          fill="#1b3435"/>
+
+    <g fill="#294744">
+      <path d="M200 750 250 620l50 130h-31l48 75H183l48-75Z"/>
+      <path d="M385 755 430 640l45 115h-28l43 68H370l43-68Z"/>
+      <path d="M1480 750 1530 620l50 130h-31l48 75h-134l48-75Z"/>
+      <path d="M1680 760 1725 645l45 115h-28l43 68h-120l43-68Z"/>
+    </g>
+
+    <g fill="#142d30">
+      <path d="M-60 1000 65 690l125 310h-78l115 175H-102l115-175Z"/>
+      <path d="M195 1030 300 770l105 260h-65l98 145H162l98-145Z"/>
+      <path d="M1650 1020 1760 745l110 275h-68l103 155h-290l103-155Z"/>
+      <path d="M1870 1000 1985 710l115 290h-72l108 165h-287l108-165Z"/>
+    </g>
+
+    <g fill="none" stroke="#9ab99a" stroke-width="7" stroke-linecap="round">
+      <path d="M530 900q-5-55 8-108m-5 75q-30-24-47-19m50-14q27-23 45-19"/>
+      <path d="M720 930q-7-48 4-91m-3 60q-24-18-39-14m41-13q22-19 38-15"/>
+      <path d="M1345 910q-4-50 7-96m-4 66q-25-20-42-16m44-14q23-20 40-16"/>
+    </g>
+
+    <g fill="#8eaf8a">
+      <ellipse cx="486" cy="848" rx="23" ry="10" transform="rotate(28 486 848)"/>
+      <ellipse cx="581" cy="834" rx="23" ry="10" transform="rotate(-28 581 834)"/>
+      <ellipse cx="682" cy="885" rx="19" ry="8" transform="rotate(28 682 885)"/>
+      <ellipse cx="762" cy="870" rx="19" ry="8" transform="rotate(-28 762 870)"/>
+      <ellipse cx="1309" cy="851" rx="21" ry="9" transform="rotate(28 1309 851)"/>
+      <ellipse cx="1377" cy="837" rx="21" ry="9" transform="rotate(-28 1377 837)"/>
+    </g>
+
+    <g>
+      <g transform="translate(538 784)">
+        <circle cy="-15" r="10" fill="#fff2d8"/><circle cx="14" cy="-5" r="10" fill="#fff2d8"/>
+        <circle cx="9" cy="12" r="10" fill="#fff2d8"/><circle cx="-9" cy="12" r="10" fill="#fff2d8"/>
+        <circle cx="-14" cy="-5" r="10" fill="#fff2d8"/><circle r="7" fill="#e7b966"/>
+      </g>
+      <g transform="translate(724 824)">
+        <circle cy="-13" r="8" fill="#eabacb"/><circle cx="12" cy="-4" r="8" fill="#eabacb"/>
+        <circle cx="7" cy="10" r="8" fill="#eabacb"/><circle cx="-7" cy="10" r="8" fill="#eabacb"/>
+        <circle cx="-12" cy="-4" r="8" fill="#eabacb"/><circle r="6" fill="#e7b966"/>
+      </g>
+      <g transform="translate(1350 768)">
+        <circle cy="-14" r="9" fill="#fff2d8"/><circle cx="13" cy="-4" r="9" fill="#fff2d8"/>
+        <circle cx="8" cy="11" r="9" fill="#fff2d8"/><circle cx="-8" cy="11" r="9" fill="#fff2d8"/>
+        <circle cx="-13" cy="-4" r="9" fill="#fff2d8"/><circle r="6" fill="#e7b966"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -12,6 +12,7 @@ class QWebEngineContextMenuRequest;
 namespace Polecat {
 
 class SettingsManager;
+class BookmarkManager;
 class WebPage;
 
 // WebView is a thin QWebEngineView subclass that owns a WebPage, forwards the
@@ -29,6 +30,9 @@ public:
 
     WebPage *webPage() const { return m_page; }
     bool isPrivate() const { return m_private; }
+
+    // Used to populate the New Tab page's bookmark grid.
+    void setBookmarks(BookmarkManager *bookmarks) { m_bookmarks = bookmarks; }
 
     // Loads a URL, handling Polecat's internal "about:" pages (about:newtab,
     // about:settings, about:private, about:blank) by rendering the bundled HTML
@@ -51,9 +55,11 @@ protected:
 private:
     void showCrashPage(const QString &detail);
     QString buildSettingsHtml() const;
+    QString buildNewTabHtml() const;
 
     WebPage *m_page = nullptr;
     SettingsManager *m_settings = nullptr;
+    BookmarkManager *m_bookmarks = nullptr;
     bool m_private = false;
 };
 

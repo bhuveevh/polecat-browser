@@ -32,8 +32,14 @@ public:
     void setLoadProgress(int percent);      // 0..100, or -1 to hide
     void selectAllForEditing();
 
+    // Shown in the site-info popup.
+    bool isSecure() const { return m_secure; }
+    bool isInternal() const { return m_internal; }
+
 signals:
     void submitRequested(const QString &text);
+    // Emitted when the user clicks the leading site-security indicator.
+    void siteInfoRequested();
 
 protected:
     void focusInEvent(QFocusEvent *event) override;

@@ -197,7 +197,13 @@ QListWidget::item { padding: 6px; border-radius: 6px; }
 QListWidget::item:selected { background: %6; color: #ffffff; }
 #sidebar { background: %2; border-right: 1px solid %5; }
 QStatusBar { background: %2; color: %8; }
-#findBar { background: %2; border-top: 1px solid %5; }
+#findBar {
+    background: %2; border: 1px solid %5; border-radius: 12px;
+    padding: 2px 4px;
+}
+#findBar QLineEdit { border: none; background: transparent; padding: 5px 6px; }
+#findBar QToolButton { border: none; border-radius: 8px; padding: 4px; }
+#findBar QToolButton:hover { background: %5; }
 )")
         .arg(window, barBg, tabStrip, field, border,
              accentSecondary(), text, subtle, tabActive);

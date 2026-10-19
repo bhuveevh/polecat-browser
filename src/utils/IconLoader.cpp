@@ -7,13 +7,12 @@
 #include <QPalette>
 #include <QPixmap>
 #include <QStyle>
+#include <QSvgRenderer>
 
 namespace {
 
-// Logical name -> bundled Google "Material Symbols" icon (rounded style,
-// 24x24 SVG under :/icons/ms/). These are the modern Material 3 glyphs and are
-// used ahead of the user's icon theme so the toolbar has one consistent,
-// up-to-date look.
+// Logical name -> bundled Google "Material Symbols" icon (rounded style, 24x24
+// SVG under :/icons/ms/).
 const QHash<QString, QString> &materialRegistry()
 {
     static const QHash<QString, QString> reg = {
@@ -41,12 +40,26 @@ const QHash<QString, QString> &materialRegistry()
         {QStringLiteral("win-minimize"), QStringLiteral(":/icons/ms/remove.svg")},
         {QStringLiteral("win-maximize"), QStringLiteral(":/icons/ms/crop_square.svg")},
         {QStringLiteral("win-restore"),  QStringLiteral(":/icons/ms/filter_none.svg")},
+        {QStringLiteral("zoom-in"),   QStringLiteral(":/icons/ms/zoom_in.svg")},
+        {QStringLiteral("zoom-out"),  QStringLiteral(":/icons/ms/zoom_out.svg")},
+        {QStringLiteral("print"),     QStringLiteral(":/icons/ms/print.svg")},
+        {QStringLiteral("save"),      QStringLiteral(":/icons/ms/save.svg")},
+        {QStringLiteral("note"),      QStringLiteral(":/icons/ms/edit_note.svg")},
+        {QStringLiteral("translate"), QStringLiteral(":/icons/ms/translate.svg")},
+        {QStringLiteral("fullscreen"),QStringLiteral(":/icons/ms/fullscreen.svg")},
+        {QStringLiteral("code"),      QStringLiteral(":/icons/ms/code.svg")},
+        {QStringLiteral("info"),      QStringLiteral(":/icons/ms/info.svg")},
+        {QStringLiteral("new-window"),QStringLiteral(":/icons/ms/open_in_new.svg")},
+        {QStringLiteral("restore-session"), QStringLiteral(":/icons/ms/history.svg")},
+        {QStringLiteral("quit"),      QStringLiteral(":/icons/ms/logout.svg")},
+        {QStringLiteral("copy"),      QStringLiteral(":/icons/ms/content_copy.svg")},
+        {QStringLiteral("clear"),     QStringLiteral(":/icons/ms/delete.svg")},
     };
     return reg;
 }
 
 // Fallbacks to the platform style's own window buttons, used only if the
-// bundled glyph fails to load so the controls are never invisible.
+// bundled glyph fails to render so the controls are never invisible.
 QStyle::StandardPixmap windowButtonFallback(const QString &name)
 {
     if (name == QLatin1String("win-minimize"))
@@ -72,17 +85,20 @@ QColor iconColor()
     return c;
 }
 
-// Renders a bundled SVG and recolours it, producing normal/active/disabled
-// variants so the icon follows the theme instead of being a fixed black glyph.
+// Renders a bundled SVG with QSvgRenderer (so we do NOT depend on the Qt SVG
+// *image plugin* being installed) and recolours it for normal/active/disabled
+// states, at several sizes so the glyphs stay crisp.
 QIcon tinted(const QString &resource, const QColor &color)
 {
-    const QPixmap base = QIcon(resource).pixmap(QSize(64, 64));
-    if (base.isNull())
+    QSvgRenderer renderer(resource);
+    if (!renderer.isValid())
         return QIcon();
 
-    auto recolor = [&base](const QColor &c) {
-        QPixmap pm = base;
+    auto recolor = [&renderer](int size, const QColor &c) {
+        QPixmap pm(size, size);
+        pm.fill(Qt::transparent);
         QPainter p(&pm);
+        renderer.render(&p);
         p.setCompositionMode(QPainter::CompositionMode_SourceIn);
         p.fillRect(pm.rect(), c);
         p.end();
@@ -93,9 +109,11 @@ QIcon tinted(const QString &resource, const QColor &color)
     disabled.setAlpha(110);
 
     QIcon icon;
-    icon.addPixmap(recolor(color), QIcon::Normal);
-    icon.addPixmap(recolor(color), QIcon::Active);
-    icon.addPixmap(recolor(disabled), QIcon::Disabled);
+    for (int size : {16, 20, 24, 32, 48, 64}) {
+        icon.addPixmap(recolor(size, color), QIcon::Normal);
+        icon.addPixmap(recolor(size, color), QIcon::Active);
+        icon.addPixmap(recolor(size, disabled), QIcon::Disabled);
+    }
     return icon;
 }
 
@@ -132,10 +150,20 @@ QIcon icon(const QString &name)
 
 QIcon appIcon()
 {
-    QIcon themed = QIcon::fromTheme(QStringLiteral("org.opentiaos.PolecatBrowser"));
-    if (!themed.isNull() && !themed.availableSizes().isEmpty())
-        return themed;
-    return QIcon(QStringLiteral(":/icons/org.opentiaos.PolecatBrowser.svg"));
+    QSvgRenderer renderer(QStringLiteral(":/icons/org.opentiaos.PolecatBrowser.svg"));
+    if (renderer.isValid()) {
+        QIcon icon;
+        for (int size : {32, 64, 128, 256}) {
+            QPixmap pm(size, size);
+            pm.fill(Qt::transparent);
+            QPainter p(&pm);
+            renderer.render(&p);
+            p.end();
+            icon.addPixmap(pm);
+        }
+        return icon;
+    }
+    return QIcon::fromTheme(QStringLiteral("org.opentiaos.PolecatBrowser"));
 }
 
 } // namespace IconLoader
