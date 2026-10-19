@@ -89,12 +89,13 @@ void ProfileManager::applyCommonPolicy(QWebEngineProfile *profile, bool persiste
     // Qt WebEngine exposes third-party cookie blocking through the cookie
     // policy filter; we register a filter when blocking is requested.
     if (blockThirdParty) {
-        profile->setCookieFilter([](const QWebEngineCookieStore::FilterRequest &req) {
+        // Qt 6.4: the cookie filter lives on the profile's cookie store.
+        profile->cookieStore()->setCookieFilter([](const QWebEngineCookieStore::FilterRequest &req) {
             // Reject cookies set by third-party (non-navigating) requests.
             return !req.thirdParty;
         });
     } else {
-        profile->setCookieFilter({});
+        profile->cookieStore()->setCookieFilter({});
     }
 
     // Content blocking (ad/tracker) is applied by the interceptor.
