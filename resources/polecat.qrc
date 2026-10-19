@@ -2,31 +2,45 @@
     <qresource prefix="/">
         <file>icons/org.opentiaos.PolecatBrowser.svg</file>
         <file>wallpaper.svg</file>
-        <file>icons/ms/account_circle.svg</file>
-        <file>icons/ms/add.svg</file>
-        <file>icons/ms/arrow_back.svg</file>
-        <file>icons/ms/arrow_forward.svg</file>
-        <file>icons/ms/article.svg</file>
-        <file>icons/ms/bookmarks.svg</file>
-        <file>icons/ms/close.svg</file>
-        <file>icons/ms/crop_square.svg</file>
-        <file>icons/ms/download.svg</file>
-        <file>icons/ms/filter_none.svg</file>
-        <file>icons/ms/history.svg</file>
-        <file>icons/ms/home.svg</file>
-        <file>icons/ms/lock.svg</file>
-        <file>icons/ms/lock_open.svg</file>
-        <file>icons/ms/more_vert.svg</file>
-        <file>icons/ms/refresh.svg</file>
-        <file>icons/ms/remove.svg</file>
-        <file>icons/ms/search.svg</file>
-        <file>icons/ms/settings.svg</file>
-        <file>icons/ms/star.svg</file>
-        <file>icons/ms/star_filled.svg</file>
-        <file>icons/ms/view_sidebar.svg</file>
-        <file>icons/ms/visibility_off.svg</file>
-        <file>html/newtab.html</file>
+        <file>icons/png/account_circle.png</file>
+        <file>icons/png/add.png</file>
+        <file>icons/png/arrow_back.png</file>
+        <file>icons/png/arrow_forward.png</file>
+        <file>icons/png/article.png</file>
+        <file>icons/png/bookmarks.png</file>
+        <file>icons/png/brand.png</file>
+        <file>icons/png/close.png</file>
+        <file>icons/png/code.png</file>
+        <file>icons/png/content_copy.png</file>
+        <file>icons/png/crop_square.png</file>
+        <file>icons/png/delete.png</file>
+        <file>icons/png/download.png</file>
+        <file>icons/png/edit_note.png</file>
+        <file>icons/png/filter_none.png</file>
+        <file>icons/png/fullscreen.png</file>
+        <file>icons/png/history.png</file>
+        <file>icons/png/home.png</file>
+        <file>icons/png/info.png</file>
+        <file>icons/png/lock.png</file>
+        <file>icons/png/lock_open.png</file>
+        <file>icons/png/logout.png</file>
+        <file>icons/png/more_vert.png</file>
+        <file>icons/png/open_in_new.png</file>
+        <file>icons/png/print.png</file>
+        <file>icons/png/refresh.png</file>
+        <file>icons/png/remove.png</file>
+        <file>icons/png/save.png</file>
+        <file>icons/png/search.png</file>
+        <file>icons/png/settings.png</file>
+        <file>icons/png/star.png</file>
+        <file>icons/png/star_filled.png</file>
+        <file>icons/png/translate.png</file>
+        <file>icons/png/view_sidebar.png</file>
+        <file>icons/png/visibility_off.png</file>
+        <file>icons/png/zoom_in.png</file>
+        <file>icons/png/zoom_out.png</file>
         <file>html/error.html</file>
+        <file>html/newtab.html</file>
         <file>html/privatenote.html</file>
         <file>html/settings.html</file>
         <file>filters/easylist-sample.txt</file>

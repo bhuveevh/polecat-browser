@@ -100,11 +100,18 @@ QString WebView::buildNewTabHtml() const
     QString html = QString::fromUtf8(f.readAll());
 
     // Wallpaper (bundled SVG, inlined so the page needs no extra requests).
+    // IMPORTANT: strip the SVG's own <style> block. Inlined in HTML it would
+    // apply document-wide, and its `.dark { display: none }` rule matches
+    // <body class="dark"> and blanks the entire page in dark mode.
     QString wallpaper;
     QFile w(QStringLiteral(":/wallpaper.svg"));
     if (w.open(QIODevice::ReadOnly)) {
         wallpaper = QString::fromUtf8(w.readAll());
         wallpaper.remove(QRegularExpression(QStringLiteral("<\\?xml[^>]*\\?>")));
+        wallpaper.remove(QRegularExpression(QStringLiteral("<style[^>]*>.*?</style>"),
+                                            QRegularExpression::DotMatchesEverythingOption));
+        wallpaper.remove(QRegularExpression(QStringLiteral("<!--.*?-->"),
+                                            QRegularExpression::DotMatchesEverythingOption));
         wallpaper.replace(QStringLiteral("class=\"light\""), QString());
     }
 
