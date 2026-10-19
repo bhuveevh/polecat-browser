@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     // Register Polecat's internal command scheme (used by the built-in pages,
     // e.g. the Settings page) before the WebEngine initialises.
     QWebEngineUrlScheme polecatScheme(QByteArrayLiteral("polecat"));
-    polecatScheme.setSyntax(QWebEngineUrlScheme::Path);
+    polecatScheme.setSyntax(QWebEngineUrlScheme::Syntax::Path);
     polecatScheme.setFlags(QWebEngineUrlScheme::LocalScheme
                            | QWebEngineUrlScheme::LocalAccessAllowed);
     QWebEngineUrlScheme::registerScheme(polecatScheme);
