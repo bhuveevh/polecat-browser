@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Polecat Browser
+Comment=Fast and privacy-focused web browser
+Exec=polecat-browser %U
+TryExec=polecat-browser
+Icon=org.opentiaos.PolecatBrowser
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=text/html;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+StartupWMClass=polecat-browser

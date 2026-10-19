@@ -1,0 +1,36 @@
+Polecat Browser
+Copyright (C) 2026 OpentiaOS Developer <opentiaos@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+The full text of the GNU General Public License version 3 is also available on
+any Debian system at /usr/share/common-licenses/GPL-3.
+
+-------------------------------------------------------------------------------
+Third-party components
+-------------------------------------------------------------------------------
+
+Polecat Browser is built with, and links against, the following components.
+They are used under their own licences and are not modified or redistributed by
+this project:
+
+  * Qt 6 (https://www.qt.io) — licensed under the GNU Lesser General Public
+    License v3 (LGPL-3.0) and the GNU General Public License v3, among others.
+  * Qt WebEngine — part of Qt; it embeds the Chromium project
+    (https://www.chromium.org), which is licensed under the BSD 3-clause
+    licence and additional licences. Chromium's own attribution notices are
+    shipped with the Qt WebEngine runtime package.
+
+Polecat Browser is not affiliated with, or endorsed by, Google, Mozilla,
+Microsoft or Apple, and uses no name or logo of those projects.

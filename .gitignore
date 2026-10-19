@@ -1,0 +1,41 @@
+# Build output
+build/
+build-*/
+*.o
+*.so
+*.a
+polecat-browser
+!packaging/debian/polecat-browser.desktop
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+install_manifest.txt
+
+# CPack / Debian
+*.deb
+*.dsc
+*.tar.xz
+*.buildinfo
+*.changes
+debian/polecat-browser/
+debian/.debhelper/
+debian/files
+debian/debhelper-build-stamp
+debian/*.substvars
+
+# Qt
+*.moc
+moc_*.cpp
+qrc_*.cpp
+*.qm
+
+# Editors / OS
+*.swp
+*~
+.vscode/
+.idea/
+.DS_Store

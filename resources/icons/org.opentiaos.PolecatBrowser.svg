@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2b2c"/>
+      <stop offset="1" stop-color="#1a1a1b"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="224" height="224" rx="52" fill="url(#plate)"/>
+  <!-- ears -->
+  <path d="M70 96 L86 48 L116 84 Z" fill="#D88A24"/>
+  <path d="M186 96 L170 48 L140 84 Z" fill="#D88A24"/>
+  <!-- face mask -->
+  <path d="M128 66 C170 66 194 96 194 134 C194 178 166 208 128 208
+           C90 208 62 178 62 134 C62 96 86 66 128 66 Z" fill="#D88A24"/>
+  <!-- muzzle -->
+  <path d="M128 132 C150 132 164 150 164 170 C164 190 148 202 128 202
+           C108 202 92 190 92 170 C92 150 106 132 128 132 Z" fill="#F5E3C8"/>
+  <!-- eyes -->
+  <circle cx="104" cy="128" r="11" fill="#3D78B8"/>
+  <circle cx="152" cy="128" r="11" fill="#3D78B8"/>
+  <circle cx="104" cy="128" r="4" fill="#101010"/>
+  <circle cx="152" cy="128" r="4" fill="#101010"/>
+  <!-- nose -->
+  <path d="M128 158 L138 168 L128 178 L118 168 Z" fill="#202124"/>
+</svg>

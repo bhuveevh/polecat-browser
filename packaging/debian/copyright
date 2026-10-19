@@ -1,0 +1,33 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Polecat Browser
+Comment: No upstream website is published for this package.
+
+Files: *
+Copyright: 2026 OpentiaOS Developer <opentiaos@gmail.com>
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 3 can be found in /usr/share/common-licenses/GPL-3.
+
+Files: debian/*
+Copyright: 2026 OpentiaOS Developer <opentiaos@gmail.com>
+License: GPL-3+
+
+Comment:
+ Polecat Browser is built with Qt and Qt WebEngine. Qt WebEngine embeds the
+ Chromium project. Those components are copyright their respective
+ contributors and are used under their own licences (LGPL-3 for Qt, and the
+ Chromium licences for the embedded browser engine). Polecat Browser itself
+ links against them and does not redistribute them.
+ .
+ Polecat Browser is not affiliated with, or endorsed by, Google, Mozilla,
+ Microsoft or Apple, and uses no logo or name of those projects.

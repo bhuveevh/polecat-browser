@@ -1,0 +1,56 @@
+! Polecat Browser bundled filter list (sample)
+! Source: hand-curated list of well-known advertising and tracking hosts.
+! Updated: 2026-01-01
+! This is a small sample, not a complete blocklist. The browser does not claim
+! perfect blocking. Users can add their own rules at
+!   ~/.config/polecat-browser/filters/user.txt
+!
+! Syntax supported:
+!   ||domain^        block domain and its subdomains
+!   substring        block any URL containing the substring
+!   @@||domain^      exception (never block this domain)
+!
+! --- advertising networks ---
+||doubleclick.net^
+||googlesyndication.com^
+||googleadservices.com^
+||adservice.google.com^
+||adsafeprotected.com^
+||adnxs.com^
+||criteo.com^
+||criteo.net^
+||taboola.com^
+||outbrain.com^
+||pubmatic.com^
+||rubiconproject.com^
+||openx.net^
+||casalemedia.com^
+||smartadserver.com^
+||adcolony.com^
+||mopub.com^
+!
+! --- analytics and tracking ---
+||google-analytics.com^
+||googletagmanager.com^
+||scorecardresearch.com^
+||quantserve.com^
+||hotjar.com^
+||mixpanel.com^
+||segment.io^
+||amplitude.com^
+||branch.io^
+||newrelic.com^
+||bugsnag.com^
+||sentry.io^
+!
+! --- social trackers ---
+||connect.facebook.net^
+||pixel.facebook.com^
+||ads.linkedin.com^
+||analytics.twitter.com^
+||static.ads-twitter.com^
+!
+! --- exceptions: never break these ---
+@@||google.com^
+@@||youtube.com^
+@@||wikipedia.org^

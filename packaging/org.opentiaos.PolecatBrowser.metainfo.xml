@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.opentiaos.PolecatBrowser</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Polecat Browser</name>
+  <summary>A modern, privacy-focused web browser for Debian Linux</summary>
+  <description>
+    <p>
+      Polecat Browser is a fast, simple, Linux-first web browser built with
+      Qt and Qt WebEngine. It offers normal web browsing, tabbed windows,
+      bookmarks and history, a download manager, private browsing, privacy
+      controls and optional study tools, in a clean GNOME-inspired interface.
+    </p>
+    <p>
+      It includes no telemetry and no advertisements, and it does not send your
+      browsing data anywhere unless you explicitly enable a feature that
+      requires it.
+    </p>
+  </description>
+  <launchable type="desktop-id">org.opentiaos.PolecatBrowser.desktop</launchable>
+  <provides>
+    <binary>polecat-browser</binary>
+  </provides>
+  <categories>
+    <category>Network</category>
+    <category>WebBrowser</category>
+  </categories>
+  <developer id="org.opentiaos">
+    <name>OpentiaOS Developer</name>
+  </developer>
+  <url type="homepage"></url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="1.0.0" date="2026-01-01">
+      <description>
+        <p>First release: browsing, tabs, windows, bookmarks, history,
+           downloads, private browsing, GNOME-inspired UI and Debian packaging.</p>
+      </description>
+    </release>
+  </releases>
+</component>

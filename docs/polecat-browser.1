@@ -1,0 +1,58 @@
+.TH POLECAT-BROWSER 1 "January 2026" "Polecat Browser 1.0.0" "User Commands"
+.SH NAME
+polecat-browser \- fast and privacy-focused web browser for Debian Linux
+.SH SYNOPSIS
+.B polecat-browser
+.RI [ options ]
+.RI [ url ...]
+.SH DESCRIPTION
+.B polecat-browser
+is a modern web browser built with Qt and Qt WebEngine. It offers tabbed
+browsing, multiple windows, bookmarks, history, a download manager, private
+browsing, privacy controls and optional study tools.
+.PP
+It contains no telemetry and no advertisements, and does not send browsing
+data to any remote service unless a feature that requires it is explicitly
+enabled by the user.
+.SH OPTIONS
+.TP
+.B \-p, \-\-private
+Start in a private window. Private windows do not save history, cookies,
+cache or form data on this device.
+.TP
+.B \-n, \-\-new\-window
+Open the given URLs in a new window instead of an existing one.
+.TP
+.B \-\-profile \fIname\fR
+Use the named browser profile.
+.TP
+.B \-\-verbose
+Enable verbose diagnostic logging.
+.TP
+.B \-h, \-\-help
+Show a summary of options.
+.TP
+.B \-v, \-\-version
+Show the version number.
+.SH FILES
+.TP
+.I ~/.config/polecat-browser/
+Configuration (including \fIpolecat-browser.conf\fR).
+.TP
+.I ~/.local/share/polecat-browser/
+Data: the SQLite database (\fIpolecat.db\fR), browser profiles and the saved
+session.
+.TP
+.I ~/.cache/polecat-browser/
+Cache, including per-profile HTTP caches.
+.SH ENVIRONMENT
+.TP
+.B QT_LOGGING_RULES
+Qt logging categories; for example
+.RB \(lq polecat.*=true \(rq
+enables all Polecat diagnostics.
+.SH SEE ALSO
+The Polecat Browser user manual and privacy statement, installed under
+.IR /usr/share/doc/polecat-browser/ .
+.SH AUTHOR
+OpentiaOS Developer <opentiaos@gmail.com>

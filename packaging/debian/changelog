@@ -1,0 +1,23 @@
+polecat-browser (1.0.0) unstable; urgency=medium
+
+  * Initial release.
+  * Core browsing with Qt 6 WebEngine: navigation, reload/stop, address and
+    search bar.
+  * Tabbed browsing and multiple windows, including private windows.
+  * Session save and restore, and reopen-closed-tab support.
+  * SQLite-backed bookmarks (with folders, import and export) and history
+    (with search and clearing).
+  * Download manager with pause/resume/cancel, safe filename handling and
+    warnings for dangerous file types.
+  * Private browsing via an off-the-record WebEngine profile; private activity
+    is never persisted.
+  * GNOME-inspired interface: header bar, navigation toolbar, tab strip,
+    collapsible sidebar, light/dark/system theme.
+  * Privacy controls: third-party cookie blocking, HTTPS-only mode,
+    Do Not Track, per-site permissions, clear-browsing-data.
+  * Optional content blocking from bundled filter lists with a user allowlist.
+  * Optional study tools: reader mode, notes, vocabulary, reading list,
+    focus timer and a translation helper.
+  * Debian packaging (.deb only) with desktop file, metainfo and icon.
+
+ -- OpentiaOS Developer <opentiaos@gmail.com>  Thu, 01 Jan 2026 00:00:00 +0530

@@ -1,0 +1,5 @@
+#!/bin/sh
+# prerm — nothing to stop; the browser has no daemon or background service.
+set -e
+
+exit 0

@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# Debian build rules for polecat-browser.
+#
+# Build with:   dpkg-buildpackage -us -uc -b
+#
+# CMake install rules place the executable, desktop file, metainfo, icon and
+# man page in the correct FHS locations, so we let dh_auto_install drive it and
+# keep debian/install empty.
+
+%:
+	dh $@ --buildsystem=cmake
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DPOLECAT_BUILD_TESTS=OFF
+
+# The application needs no root at runtime and stores nothing under /usr.

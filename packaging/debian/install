@@ -1,0 +1,13 @@
+# This file is intentionally empty.
+#
+# File installation for polecat-browser is driven by the CMake install() rules
+# in the top-level CMakeLists.txt, which place:
+#
+#   /usr/bin/polecat-browser
+#   /usr/share/applications/org.opentiaos.PolecatBrowser.desktop
+#   /usr/share/metainfo/org.opentiaos.PolecatBrowser.metainfo.xml
+#   /usr/share/icons/hicolor/scalable/apps/org.opentiaos.PolecatBrowser.svg
+#   /usr/share/man/man1/polecat-browser.1
+#
+# debhelper's dh_auto_install runs those rules into debian/tmp. Listing the
+# same files here as well would install them twice, so this file lists nothing.

@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/org.opentiaos.PolecatBrowser.svg</file>
+        <file>icons/polecat-back.svg</file>
+        <file>icons/polecat-forward.svg</file>
+        <file>icons/polecat-reload.svg</file>
+        <file>icons/polecat-stop.svg</file>
+        <file>icons/polecat-home.svg</file>
+        <file>icons/polecat-new-tab.svg</file>
+        <file>icons/polecat-close.svg</file>
+        <file>icons/polecat-bookmark.svg</file>
+        <file>icons/polecat-bookmarks.svg</file>
+        <file>icons/polecat-history.svg</file>
+        <file>icons/polecat-downloads.svg</file>
+        <file>icons/polecat-menu.svg</file>
+        <file>icons/polecat-private.svg</file>
+        <file>icons/polecat-reader.svg</file>
+        <file>icons/polecat-find.svg</file>
+        <file>icons/polecat-sidebar.svg</file>
+        <file>icons/polecat-secure.svg</file>
+        <file>icons/polecat-insecure.svg</file>
+        <file>icons/polecat-settings.svg</file>
+        <file>html/newtab.html</file>
+        <file>html/error.html</file>
+        <file>html/privatenote.html</file>
+        <file>filters/easylist-sample.txt</file>
+    </qresource>
+</RCC>
