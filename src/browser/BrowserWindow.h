@@ -18,6 +18,7 @@ namespace Polecat {
 class TabManager;
 class BrowserTab;
 class HeaderBar;
+class TitleBar;
 class NavigationToolBar;
 class TabBar;
 class Sidebar;
@@ -67,6 +68,10 @@ signals:
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+    void changeEvent(QEvent *event) override;
+    // Watches all mouse presses so the frameless window can be resized from any
+    // edge (delegated to the compositor via startSystemResize()).
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private slots:
     void onCurrentTabChanged(BrowserTab *tab);
@@ -102,6 +107,8 @@ private:
     void applySettings();
     void openFindInPage();
     void setFullScreenInternal(bool on);
+    void toggleMaximize();
+    Qt::Edges resizeEdgesAt(const QPoint &globalPos) const;
     void printPage();
     void savePageAsPdf();
     void viewSource();
@@ -119,6 +126,8 @@ private:
     bool m_private = false;
 
     TabManager *m_tabs = nullptr;
+    TitleBar *m_titleBar = nullptr;
+    bool m_customTitleBar = false;
     NavigationToolBar *m_nav = nullptr;
     TabBar *m_tabBar = nullptr;
     Sidebar *m_sidebar = nullptr;

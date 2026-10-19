@@ -15,6 +15,9 @@ TabBar::TabBar(QWidget *parent)
     : QWidget(parent)
 {
     setObjectName(QStringLiteral("tabBarContainer"));
+    // Size to the tabs (plus the new-tab button) rather than expanding, so the
+    // frameless TitleBar can use the remaining space as a drag handle.
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
     auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(4, 2, 4, 0);

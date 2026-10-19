@@ -42,6 +42,8 @@ public:
     static QString kSidebarSection()    { return QStringLiteral("appearance/sidebarSection"); }
     static QString kDefaultZoom()       { return QStringLiteral("appearance/defaultZoom"); }  // percent
     static QString kHardwareAcceleration() { return QStringLiteral("appearance/hardwareAcceleration"); }
+    // Use the desktop's own title bar instead of the built-in (frameless) one.
+    static QString kNativeTitleBar()    { return QStringLiteral("appearance/nativeTitleBar"); }
     // Privacy
     static QString kBlockThirdPartyCookies() { return QStringLiteral("privacy/blockThirdPartyCookies"); }
     static QString kHttpsOnly()         { return QStringLiteral("privacy/httpsOnly"); }

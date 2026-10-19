@@ -39,6 +39,9 @@
         <file>icons/material/lock_open.svg</file>
         <file>icons/material/settings.svg</file>
         <file>icons/material/account_circle.svg</file>
+        <file>icons/material/remove.svg</file>
+        <file>icons/material/crop_square.svg</file>
+        <file>icons/material/filter_none.svg</file>
         <file>html/newtab.html</file>
         <file>html/error.html</file>
         <file>html/privatenote.html</file>

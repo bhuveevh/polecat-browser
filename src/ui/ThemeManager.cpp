@@ -171,6 +171,12 @@ QLineEdit#addressBar:focus { background: %1; border: 1px solid %6; }
 QProgressBar#addressProgress { border: none; background: transparent; }
 QProgressBar#addressProgress::chunk { background: %6; }
 
+#titleBar { background: %3; }
+QToolButton#winButton, QToolButton#winCloseButton {
+    border: none; background: transparent; border-radius: 6px;
+}
+QToolButton#winButton:hover, QToolButton#winCloseButton:hover { background: %5; }
+
 #tabBarContainer { background: %3; }
 QTabBar#mainTabBar { background: %3; }
 QTabBar#mainTabBar::tab {

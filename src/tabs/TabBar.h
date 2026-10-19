@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QIcon>
+#include <QSizePolicy>
 
 class QTabBar;
 class QToolButton;
@@ -23,6 +24,10 @@ public:
 
     void setTabManager(TabManager *manager);
     void setNewTabButtonVisible(bool visible);
+
+    // The inner QTabBar (used by the frameless TitleBar to allow dragging the
+    // window from the empty part of the strip).
+    QTabBar *tabBar() const { return m_bar; }
 
 signals:
     void newTabRequested();

@@ -86,6 +86,7 @@ set(POLECAT_SOURCES
     src/ui/Sidebar.cpp
     src/ui/FindBar.cpp
     src/ui/AboutDialog.cpp
+    src/ui/TitleBar.cpp
     src/ui/ThemeManager.cpp
 
     src/database/DatabaseManager.cpp
@@ -134,6 +135,7 @@ set(POLECAT_HEADERS
     src/ui/Sidebar.h
     src/ui/FindBar.h
     src/ui/AboutDialog.h
+    src/ui/TitleBar.h
     src/ui/ThemeManager.h
 
     src/database/DatabaseManager.h

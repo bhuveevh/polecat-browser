@@ -8,6 +8,7 @@
 #include "tabs/BrowserTab.h"
 #include "tabs/TabBar.h"
 #include "ui/HeaderBar.h"
+#include "ui/TitleBar.h"
 #include "ui/Sidebar.h"
 #include "ui/FindBar.h"
 #include "bookmarks/BookmarkManager.h"
@@ -41,6 +42,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QMouseEvent>
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QPrintDialog>
@@ -55,6 +57,7 @@
 #include <QWebEngineSettings>
 #include <QWebEngineView>
 #include <QWebEngineDownloadRequest>
+#include <QWindow>
 
 namespace Polecat {
 
@@ -79,6 +82,18 @@ BrowserWindow::BrowserWindow(AppContext context,
     // not just "default"). registerProfile() is idempotent.
     if (m_context.downloads)
         m_context.downloads->registerProfile(normal, !m_private);
+
+    // Chrome-style client-side decoration: draw our own title bar and go
+    // frameless. Moving and resizing are delegated to the compositor
+    // (startSystemMove/startSystemResize), so this works on Wayland and X11.
+    // Can be turned off with appearance/nativeTitleBar=true if a desktop
+    // misbehaves.
+    m_customTitleBar =
+        !m_context.settings->value(SettingsManager::kNativeTitleBar(), false).toBool();
+    if (m_customTitleBar) {
+        setWindowFlag(Qt::FramelessWindowHint, true);
+        qApp->installEventFilter(this);
+    }
 
     buildLayout();
     buildMenus();
@@ -113,6 +128,15 @@ void BrowserWindow::buildLayout()
     m_tabBar = new TabBar(central);
     m_tabBar->setTabManager(m_tabs);
     m_tabBar->setNewTabButtonVisible(true);
+
+    if (m_customTitleBar) {
+        m_titleBar = new TitleBar(central);
+        m_titleBar->setTabBar(m_tabBar);
+        m_titleBar->setMaximized(isMaximized());
+        connect(m_titleBar, &TitleBar::minimizeRequested, this, &QWidget::showMinimized);
+        connect(m_titleBar, &TitleBar::toggleMaximizeRequested, this, &BrowserWindow::toggleMaximize);
+        connect(m_titleBar, &TitleBar::closeRequested, this, &QWidget::close);
+    }
 
     // Content row: optional sidebar + the stacked web views.
     auto *contentRow = new QWidget(central);
@@ -158,8 +182,13 @@ void BrowserWindow::buildLayout()
     m_statusBar->addWidget(m_statusLabel);
     m_statusBar->hide();
 
-    // Chrome-style order: tab strip on top, then the navigation toolbar.
-    rootLayout->addWidget(m_tabBar);
+    // Chrome-style order: the title bar (tabs + window controls) on top, then
+    // the navigation toolbar. Without the custom title bar the tab strip sits
+    // there instead.
+    if (m_customTitleBar)
+        rootLayout->addWidget(m_titleBar);
+    else
+        rootLayout->addWidget(m_tabBar);
     rootLayout->addWidget(m_nav);
     rootLayout->addWidget(contentRow, 1);
 
@@ -720,13 +749,73 @@ void BrowserWindow::setFullScreenInternal(bool on)
     m_fullScreen = on;
     if (on) {
         m_nav->hide();
-        m_tabBar->hide();
+        if (m_titleBar)
+            m_titleBar->hide();
+        else
+            m_tabBar->hide();
         showFullScreen();
     } else {
         m_nav->show();
+        if (m_titleBar)
+            m_titleBar->show();
         m_tabBar->setVisible(m_context.settings->value(SettingsManager::kShowTabBar(), true).toBool());
         showNormal();
     }
+}
+
+void BrowserWindow::toggleMaximize()
+{
+    if (isMaximized())
+        showNormal();
+    else
+        showMaximized();
+}
+
+Qt::Edges BrowserWindow::resizeEdgesAt(const QPoint &globalPos) const
+{
+    const int m = 6; // grab margin, in pixels
+    const QRect g = frameGeometry();
+    Qt::Edges edges;
+    if (globalPos.x() <= g.left() + m)
+        edges |= Qt::LeftEdge;
+    if (globalPos.x() >= g.right() - m)
+        edges |= Qt::RightEdge;
+    if (globalPos.y() <= g.top() + m)
+        edges |= Qt::TopEdge;
+    if (globalPos.y() >= g.bottom() - m)
+        edges |= Qt::BottomEdge;
+    return edges;
+}
+
+bool BrowserWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    // Resize a frameless window by grabbing any edge. The press is intercepted
+    // before the child (e.g. the web view) sees it, then handed to the
+    // compositor so the native move-resize loop takes over.
+    if (m_customTitleBar && !isMaximized() && !isFullScreen()) {
+        auto *w = qobject_cast<QWidget *>(watched);
+        if (w && w->window() == this && !qobject_cast<QAbstractButton *>(w)
+            && event->type() == QEvent::MouseButtonPress) {
+            auto *me = static_cast<QMouseEvent *>(event);
+            if (me->button() == Qt::LeftButton) {
+                const Qt::Edges edges = resizeEdgesAt(me->globalPosition().toPoint());
+                if (edges) {
+                    if (QWindow *handle = windowHandle()) {
+                        handle->startSystemResize(edges);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return QMainWindow::eventFilter(watched, event);
+}
+
+void BrowserWindow::changeEvent(QEvent *event)
+{
+    QMainWindow::changeEvent(event);
+    if (event->type() == QEvent::WindowStateChange && m_titleBar)
+        m_titleBar->setMaximized(isMaximized());
 }
 
 void BrowserWindow::toggleSidebar()

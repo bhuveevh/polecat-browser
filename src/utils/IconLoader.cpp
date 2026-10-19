@@ -35,6 +35,9 @@ const QHash<QString, QString> &materialRegistry()
         {QStringLiteral("insecure"),  QStringLiteral(":/icons/material/lock_open.svg")},
         {QStringLiteral("settings"),  QStringLiteral(":/icons/material/settings.svg")},
         {QStringLiteral("profile"),   QStringLiteral(":/icons/material/account_circle.svg")},
+        {QStringLiteral("win-minimize"), QStringLiteral(":/icons/material/remove.svg")},
+        {QStringLiteral("win-maximize"), QStringLiteral(":/icons/material/crop_square.svg")},
+        {QStringLiteral("win-restore"),  QStringLiteral(":/icons/material/filter_none.svg")},
     };
     return reg;
 }
