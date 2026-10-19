@@ -13,7 +13,7 @@ namespace Paths {
 
 static QString appName()
 {
-    return QStringLiteral(kAppDirName);
+    return QString::fromLatin1(kAppDirName);
 }
 
 QString configDir()
