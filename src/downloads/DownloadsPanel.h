@@ -2,11 +2,13 @@
 
 #include <QWidget>
 
+class QListWidget;
+class QListWidgetItem;
+
 namespace Polecat {
 
 class DownloadsManager;
 class DownloadEntry;
-class QListWidget;
 
 // DownloadsPanel shows the download list with progress, speed and actions
 // (pause, resume, cancel, open, open folder, remove, clear completed).
@@ -22,7 +24,7 @@ public:
 private slots:
     void onEntriesChanged();
     void showContextMenu(const QPoint &pos);
-    void onItemActivated(QListWidget *list, class QListWidgetItem *item);
+    void onItemActivated(QListWidget *list, QListWidgetItem *item);
 
 private:
     QString describe(DownloadEntry *entry) const;
