@@ -4,6 +4,7 @@
 #include "utils/Logging.h"
 
 #include <QDateTime>
+#include <QSqlError>
 #include <QSqlQuery>
 #include <QVariant>
 
@@ -26,7 +27,6 @@ QString PermissionManager::featureKey(QWebEnginePage::Feature feature)
     case QWebEnginePage::MouseLock:                 return QStringLiteral("mouse-lock");
     case QWebEnginePage::DesktopVideoCapture:       return QStringLiteral("desktop-video");
     case QWebEnginePage::DesktopAudioVideoCapture:  return QStringLiteral("desktop-audio-video");
-    case QWebEnginePage::ClipboardReadWrite:        return QStringLiteral("clipboard");
     default:                                        return QStringLiteral("unknown");
     }
 }
@@ -42,7 +42,6 @@ QString PermissionManager::featureName(QWebEnginePage::Feature feature)
     case QWebEnginePage::MouseLock:                 return QObject::tr("lock your mouse pointer");
     case QWebEnginePage::DesktopVideoCapture:       return QObject::tr("capture your screen");
     case QWebEnginePage::DesktopAudioVideoCapture:  return QObject::tr("capture your screen and audio");
-    case QWebEnginePage::ClipboardReadWrite:        return QObject::tr("read or write the clipboard");
     default:                                        return QObject::tr("use a protected feature");
     }
 }

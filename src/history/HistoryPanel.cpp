@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QLocale>
 #include <QMenu>
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -58,7 +59,7 @@ void HistoryPanel::reload()
     QString lastDay;
     for (const HistoryEntry &e : entries) {
         const QDateTime dt = QDateTime::fromSecsSinceEpoch(e.lastVisit);
-        const QString day = dt.date().toString(Qt::DefaultLocaleLongDate);
+        const QString day = QLocale::system().toString(dt.date(), QLocale::LongFormat);
         if (day != lastDay) {
             auto *header = new QListWidgetItem(day, m_list);
             header->setFlags(Qt::NoItemFlags);
@@ -67,7 +68,7 @@ void HistoryPanel::reload()
         }
         const QString label = QStringLiteral("%1\n%2  ·  %3")
                                   .arg(e.title.isEmpty() ? e.url.host() : e.title,
-                                       dt.time().toString(Qt::DefaultLocaleShortDate),
+                                       QLocale::system().toString(dt.time(), QLocale::ShortFormat),
                                        UrlUtils::displayString(e.url));
         auto *item = new QListWidgetItem(label, m_list);
         item->setIcon(IconLoader::icon(QStringLiteral("history")));
