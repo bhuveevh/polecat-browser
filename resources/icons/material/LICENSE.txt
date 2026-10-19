@@ -1,0 +1,8 @@
+The SVG files in this directory are Google Material Design icons.
+
+Source: https://fonts.google.com/icons (Material Design Icons)
+Upstream: https://github.com/google/material-design-icons
+Licence: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+
+They are bundled here as monochrome 24x24 glyphs and recoloured at runtime to
+match the active light/dark theme (see src/utils/IconLoader.cpp).

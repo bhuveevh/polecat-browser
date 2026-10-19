@@ -209,6 +209,12 @@ void DownloadsManager::registerProfile(QWebEngineProfile *profile, bool persiste
 {
     if (!profile)
         return;
+    // Idempotent: a profile may be registered from more than one place (the
+    // application start-up and each window); connecting twice would create two
+    // entries and accept the same download twice.
+    if (m_registered.contains(profile))
+        return;
+    m_registered.insert(profile);
     connect(profile, &QWebEngineProfile::downloadRequested,
             this, &DownloadsManager::onDownloadRequested);
     Q_UNUSED(persistent);

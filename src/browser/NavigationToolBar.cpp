@@ -4,7 +4,9 @@
 #include "utils/IconLoader.h"
 
 #include <QAction>
+#include <QLabel>
 #include <QMenu>
+#include <QToolButton>
 
 namespace Polecat {
 
@@ -14,8 +16,9 @@ NavigationToolBar::NavigationToolBar(QWidget *parent)
     setObjectName(QStringLiteral("navigationToolBar"));
     setMovable(false);
     setFloatable(false);
-    setIconSize(QSize(18, 18));
+    setIconSize(QSize(20, 20));
     setToolButtonStyle(Qt::ToolButtonIconOnly);
+    setContentsMargins(4, 2, 4, 2);
 
     m_back = addAction(IconLoader::icon(QStringLiteral("back")), tr("Back"));
     m_back->setShortcut(QKeySequence(QStringLiteral("Alt+Left")));
@@ -41,7 +44,9 @@ NavigationToolBar::NavigationToolBar(QWidget *parent)
     m_home->setToolTip(tr("Home page"));
     connect(m_home, &QAction::triggered, this, &NavigationToolBar::homeRequested);
 
+    // The address bar expands to take the remaining width.
     m_address = new AddressBar(this);
+    m_address->setObjectName(QStringLiteral("addressBar"));
     addWidget(m_address);
     connect(m_address, &AddressBar::submitRequested, this, &NavigationToolBar::submitRequested);
 
@@ -55,6 +60,24 @@ NavigationToolBar::NavigationToolBar(QWidget *parent)
     m_reader->setToolTip(tr("Reader mode"));
     m_reader->setEnabled(false);
     connect(m_reader, &QAction::triggered, this, &NavigationToolBar::readerRequested);
+
+    m_privateBadge = new QLabel(tr("Private"), this);
+    m_privateBadge->setObjectName(QStringLiteral("privateBadge"));
+    m_privateBadge->setToolTip(tr("Private browsing is on. Activity is not saved on this device."));
+    m_privateBadge->hide();
+    addWidget(m_privateBadge);
+
+    // Profile chip (avatar + the system user's name), like Chrome's profile menu.
+    m_profile = new QToolButton(this);
+    m_profile->setObjectName(QStringLiteral("profileButton"));
+    m_profile->setIcon(IconLoader::icon(QStringLiteral("profile")));
+    m_profile->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    m_profile->setAutoRaise(true);
+    m_profile->setCursor(Qt::PointingHandCursor);
+    m_profile->setToolTip(tr("Profile"));
+    m_profile->setAccessibleName(tr("Profile"));
+    addWidget(m_profile);
+    connect(m_profile, &QToolButton::clicked, this, &NavigationToolBar::profileRequested);
 
     m_menu = addAction(IconLoader::icon(QStringLiteral("menu")), tr("Main menu"));
     m_menu->setToolTip(tr("Main menu"));
@@ -91,6 +114,17 @@ void NavigationToolBar::setBookmarked(bool on)
 void NavigationToolBar::setReaderAvailable(bool on)
 {
     m_reader->setEnabled(on);
+}
+
+void NavigationToolBar::setProfileName(const QString &name)
+{
+    m_profile->setText(name);
+    m_profile->setToolTip(name.isEmpty() ? tr("Profile") : name);
+}
+
+void NavigationToolBar::setPrivate(bool isPrivate)
+{
+    m_privateBadge->setVisible(isPrivate);
 }
 
 } // namespace Polecat

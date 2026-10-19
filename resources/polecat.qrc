@@ -20,6 +20,25 @@
         <file>icons/polecat-secure.svg</file>
         <file>icons/polecat-insecure.svg</file>
         <file>icons/polecat-settings.svg</file>
+        <file>icons/material/arrow_back.svg</file>
+        <file>icons/material/arrow_forward.svg</file>
+        <file>icons/material/refresh.svg</file>
+        <file>icons/material/close.svg</file>
+        <file>icons/material/home.svg</file>
+        <file>icons/material/add.svg</file>
+        <file>icons/material/star.svg</file>
+        <file>icons/material/bookmarks.svg</file>
+        <file>icons/material/history.svg</file>
+        <file>icons/material/download.svg</file>
+        <file>icons/material/more_vert.svg</file>
+        <file>icons/material/visibility_off.svg</file>
+        <file>icons/material/article.svg</file>
+        <file>icons/material/search.svg</file>
+        <file>icons/material/view_sidebar.svg</file>
+        <file>icons/material/lock.svg</file>
+        <file>icons/material/lock_open.svg</file>
+        <file>icons/material/settings.svg</file>
+        <file>icons/material/account_circle.svg</file>
         <file>html/newtab.html</file>
         <file>html/error.html</file>
         <file>html/privatenote.html</file>

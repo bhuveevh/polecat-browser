@@ -4,13 +4,17 @@
 #include <QUrl>
 
 class QAction;
+class QLabel;
+class QToolButton;
 
 namespace Polecat {
 
 class AddressBar;
 
-// NavigationToolBar holds Back / Forward / Reload-Stop, the AddressBar, the
-// bookmark star, the reader toggle and the main menu button.
+// NavigationToolBar holds the Chrome-style top row: Back / Forward /
+// Reload-Stop / Home on the left, the expanding address bar, then the bookmark
+// star, reader toggle, an optional Private badge, the profile chip and the main
+// menu button on the right.
 class NavigationToolBar : public QToolBar
 {
     Q_OBJECT
@@ -26,6 +30,10 @@ public:
     void setBookmarked(bool on);
     void setReaderAvailable(bool on);
 
+    // Shows the user/profile name next to the avatar chip.
+    void setProfileName(const QString &name);
+    void setPrivate(bool isPrivate);
+
 signals:
     void backRequested();
     void forwardRequested();
@@ -35,6 +43,7 @@ signals:
     void bookmarkRequested();
     void readerRequested();
     void menuRequested();
+    void profileRequested();
     void submitRequested(const QString &text);
 
 private:
@@ -46,6 +55,8 @@ private:
     QAction *m_bookmark = nullptr;
     QAction *m_reader = nullptr;
     QAction *m_menu = nullptr;
+    QLabel *m_privateBadge = nullptr;
+    QToolButton *m_profile = nullptr;
 };
 
 } // namespace Polecat

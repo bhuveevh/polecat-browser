@@ -20,6 +20,10 @@ QString cacheDir();
 // The user's XDG download directory (falls back to ~/Downloads).
 QString downloadsDir();
 
+// The system user's display name: the full name from the password database
+// (pw_gecos) if present, otherwise the login name. Used for the profile chip.
+QString userDisplayName();
+
 // SQLite database file: <dataDir>/polecat.db
 QString databaseFile();
 

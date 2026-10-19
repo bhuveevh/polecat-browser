@@ -23,6 +23,7 @@
 #include "profiles/ProfileManager.h"
 #include "utils/IconLoader.h"
 #include "utils/Logging.h"
+#include "utils/Paths.h"
 #include "utils/UrlUtils.h"
 
 #include <QAbstractButton>
@@ -74,6 +75,11 @@ BrowserWindow::BrowserWindow(AppContext context,
 
     m_tabs = new TabManager(normal, priv, m_context.settings, m_private, this);
 
+    // Handle downloads from this window's profile too (covers named profiles,
+    // not just "default"). registerProfile() is idempotent.
+    if (m_context.downloads)
+        m_context.downloads->registerProfile(normal, !m_private);
+
     buildLayout();
     buildMenus();
     buildShortcuts();
@@ -94,11 +100,15 @@ void BrowserWindow::buildLayout()
     rootLayout->setContentsMargins(0, 0, 0, 0);
     rootLayout->setSpacing(0);
 
-    m_header = new HeaderBar(central);
-    m_header->setProfileName(m_profileName);
-    m_header->setPrivate(m_private);
-
     m_nav = new NavigationToolBar(central);
+
+    // Chrome-style profile chip: the system user's name for the default
+    // profile, or the named profile otherwise.
+    const QString profileLabel = (m_profileName == QLatin1String("default"))
+                                     ? Paths::userDisplayName()
+                                     : m_profileName;
+    m_nav->setProfileName(profileLabel);
+    m_nav->setPrivate(m_private);
 
     m_tabBar = new TabBar(central);
     m_tabBar->setTabManager(m_tabs);
@@ -148,9 +158,9 @@ void BrowserWindow::buildLayout()
     m_statusBar->addWidget(m_statusLabel);
     m_statusBar->hide();
 
-    rootLayout->addWidget(m_header);
-    rootLayout->addWidget(m_nav);
+    // Chrome-style order: tab strip on top, then the navigation toolbar.
     rootLayout->addWidget(m_tabBar);
+    rootLayout->addWidget(m_nav);
     rootLayout->addWidget(contentRow, 1);
 
     setCentralWidget(central);
@@ -162,8 +172,7 @@ void BrowserWindow::buildLayout()
         m_findBar->deactivate();
     });
 
-    connect(m_header, &HeaderBar::menuRequested, this, &BrowserWindow::showMainMenu);
-    connect(m_header, &HeaderBar::profileRequested, this, &BrowserWindow::showProfileMenu);
+    connect(m_nav, &NavigationToolBar::profileRequested, this, &BrowserWindow::showProfileMenu);
 
     connect(m_nav, &NavigationToolBar::backRequested, this, &BrowserWindow::onBackRequested);
     connect(m_nav, &NavigationToolBar::forwardRequested, this, &BrowserWindow::onForwardRequested);
@@ -409,7 +418,6 @@ void BrowserWindow::updateWindowTitle()
     const QString title = tab ? tab->displayTitle() : tr("New Tab");
     const QString suffix = m_private ? tr(" — Private") : QString();
     setWindowTitle(QStringLiteral("%1%2 — Polecat Browser").arg(title, suffix));
-    m_header->setTitle(title);
 }
 
 void BrowserWindow::updateAddressBar(BrowserTab *tab)
@@ -711,12 +719,10 @@ void BrowserWindow::setFullScreenInternal(bool on)
 {
     m_fullScreen = on;
     if (on) {
-        m_header->hide();
         m_nav->hide();
         m_tabBar->hide();
         showFullScreen();
     } else {
-        m_header->show();
         m_nav->show();
         m_tabBar->setVisible(m_context.settings->value(SettingsManager::kShowTabBar(), true).toBool());
         showNormal();

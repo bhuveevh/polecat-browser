@@ -119,7 +119,6 @@ private:
     bool m_private = false;
 
     TabManager *m_tabs = nullptr;
-    HeaderBar *m_header = nullptr;
     NavigationToolBar *m_nav = nullptr;
     TabBar *m_tabBar = nullptr;
     Sidebar *m_sidebar = nullptr;

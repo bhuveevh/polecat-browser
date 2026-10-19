@@ -72,10 +72,10 @@ void ThemeManager::applyPalette(bool dark)
     QPalette p;
 
     if (dark) {
-        const QColor window(0x1E, 0x1E, 0x1E);
+        const QColor window(0x20, 0x21, 0x24);
         const QColor base(0x25, 0x25, 0x26);
         const QColor alt(0x2B, 0x2B, 0x2C);
-        const QColor text(0xF5, 0xF5, 0xF5);
+        const QColor text(0xE8, 0xEA, 0xED);
         const QColor disabled(0x8A, 0x8A, 0x8A);
 
         p.setColor(QPalette::Window, window);
@@ -96,7 +96,7 @@ void ThemeManager::applyPalette(bool dark)
         p.setColor(QPalette::Disabled, QPalette::ButtonText, disabled);
         p.setColor(QPalette::Disabled, QPalette::WindowText, disabled);
     } else {
-        const QColor window(0xFA, 0xFA, 0xFA);
+        const QColor window(0xFF, 0xFF, 0xFF);
         const QColor base(0xFF, 0xFF, 0xFF);
         const QColor alt(0xF0, 0xF0, 0xF0);
         const QColor text(0x20, 0x21, 0x24);
@@ -126,53 +126,75 @@ void ThemeManager::applyPalette(bool dark)
 
 void ThemeManager::applyStyleSheet(bool dark)
 {
-    // Minimal, GNOME-adjacent styling. Kept small on purpose so the app blends
-    // into whatever GTK/Qt platform theme is active.
-    const QString bg = dark ? QStringLiteral("#1e1e1e") : QStringLiteral("#fafafa");
-    const QString barBg = dark ? QStringLiteral("#2b2b2c") : QStringLiteral("#f0f0f0");
-    const QString border = dark ? QStringLiteral("#3a3a3a") : QStringLiteral("#d8d8d8");
-    const QString text = dark ? QStringLiteral("#f5f5f5") : QStringLiteral("#202124");
-    const QString subtle = dark ? QStringLiteral("#9a9a9a") : QStringLiteral("#6b6b6b");
+    // A light, Chrome-like look: tab strip on top, one flat toolbar and a
+    // rounded address pill. Kept small and driven by the active light/dark mode
+    // so the app still follows the system theme.
+    const QString window    = dark ? QStringLiteral("#202124") : QStringLiteral("#ffffff");
+    const QString barBg     = dark ? QStringLiteral("#35363a") : QStringLiteral("#ffffff");
+    const QString tabStrip  = dark ? QStringLiteral("#202124") : QStringLiteral("#dee1e6");
+    const QString tabActive = dark ? QStringLiteral("#35363a") : QStringLiteral("#ffffff");
+    const QString field     = dark ? QStringLiteral("#202124") : QStringLiteral("#f1f3f4");
+    const QString border    = dark ? QStringLiteral("#3c4043") : QStringLiteral("#dadce0");
+    const QString text      = dark ? QStringLiteral("#e8eaed") : QStringLiteral("#202124");
+    const QString subtle    = dark ? QStringLiteral("#9aa0a6") : QStringLiteral("#5f6368");
 
     const QString qss = QStringLiteral(R"(
-QMainWindow, QDialog { background: %1; color: %4; }
-#headerBar { background: %2; border-bottom: 1px solid %3; }
-#headerBar QLabel#headerTitle { color: %4; font-weight: 600; }
-#headerBar QLabel#privateBadge {
-    background: %5; color: #ffffff; border-radius: 8px; padding: 1px 8px;
-    font-size: 11px; font-weight: 600;
+QMainWindow, QDialog { background: %1; color: %7; }
+
+QToolBar#navigationToolBar {
+    background: %2; border: none; border-bottom: 1px solid %5;
+    padding: 4px 6px; spacing: 2px;
 }
-QToolBar#navigationToolBar { background: %2; border-bottom: 1px solid %3; padding: 2px; spacing: 2px; }
 QToolBar#navigationToolBar QToolButton {
-    border: none; padding: 5px; border-radius: 6px;
+    border: none; background: transparent; padding: 6px; border-radius: 16px;
 }
-QToolBar#navigationToolBar QToolButton:hover { background: %3; }
-QToolBar#navigationToolBar QToolButton:checked { background: %3; }
-QLineEdit#addressBar, QLineEdit {
-    background: %1; color: %4; border: 1px solid %3; border-radius: 8px; padding: 5px 8px;
+QToolBar#navigationToolBar QToolButton:hover { background: %5; }
+QToolBar#navigationToolBar QToolButton:pressed { background: %5; }
+QToolBar#navigationToolBar QToolButton:checked { background: %5; }
+
+QToolButton#profileButton {
+    border: none; background: transparent; padding: 3px 10px;
+    border-radius: 16px; color: %7; font-weight: 500;
 }
-QLineEdit:focus { border: 1px solid %6; }
+QToolButton#profileButton:hover { background: %5; }
+
+QLabel#privateBadge {
+    background: #d93025; color: #ffffff; border-radius: 9px;
+    padding: 1px 8px; font-size: 11px; font-weight: 600; margin-right: 4px;
+}
+
+QLineEdit#addressBar {
+    background: %4; color: %7; border: 1px solid transparent;
+    border-radius: 16px; padding: 6px 12px; selection-background-color: %6;
+}
+QLineEdit#addressBar:focus { background: %1; border: 1px solid %6; }
 QProgressBar#addressProgress { border: none; background: transparent; }
 QProgressBar#addressProgress::chunk { background: %6; }
+
+#tabBarContainer { background: %3; }
+QTabBar#mainTabBar { background: %3; }
 QTabBar#mainTabBar::tab {
-    background: transparent; color: %7; padding: 6px 12px; margin-right: 2px;
-    border-top-left-radius: 6px; border-top-right-radius: 6px; min-width: 90px;
+    background: transparent; color: %8; padding: 7px 14px;
+    margin: 4px 2px 0 2px; min-width: 110px;
+    border-top-left-radius: 8px; border-top-right-radius: 8px;
 }
-QTabBar#mainTabBar::tab:selected { background: %1; color: %4; }
-QTabBar#mainTabBar::tab:hover { background: %3; }
-QTabWidget::pane { border: 1px solid %3; }
+QTabBar#mainTabBar::tab:selected { background: %9; color: %7; }
+QTabBar#mainTabBar::tab:hover:!selected { background: %5; }
+
+QToolButton#newTabButton {
+    border: none; background: transparent; padding: 4px; border-radius: 14px;
+}
+QToolButton#newTabButton:hover { background: %5; }
+
 QListWidget { background: %1; border: none; }
 QListWidget::item { padding: 6px; border-radius: 6px; }
 QListWidget::item:selected { background: %6; color: #ffffff; }
-#sidebar { background: %2; border-right: 1px solid %3; }
-#sidebar QLabel#sidebarTitle { color: %7; font-weight: 600; padding: 8px; }
-QStatusBar { background: %2; color: %7; }
-#findBar { background: %2; border-top: 1px solid %3; }
+#sidebar { background: %2; border-right: 1px solid %5; }
+QStatusBar { background: %2; color: %8; }
+#findBar { background: %2; border-top: 1px solid %5; }
 )")
-        .arg(bg, barBg, border, text,
-             QString::fromLatin1(errorColor().toLatin1()), // %5 (private badge red)
-             QString::fromLatin1(accentSecondary().toLatin1()), // %6 accent
-             subtle); // %7
+        .arg(window, barBg, tabStrip, field, border,
+             accentSecondary(), text, subtle, tabActive);
 
     qApp->setStyleSheet(qss);
 }

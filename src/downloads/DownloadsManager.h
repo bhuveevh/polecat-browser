@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QSet>
 #include <QString>
 #include <QUrl>
 #include <QPointer>
@@ -105,6 +106,7 @@ private:
     SettingsManager *m_settings = nullptr;
     DatabaseManager *m_db = nullptr;
     QList<DownloadEntry *> m_entries;
+    QSet<QWebEngineProfile *> m_registered;
     qint64 m_nextId = 1;
 };
 

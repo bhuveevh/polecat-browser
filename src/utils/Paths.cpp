@@ -3,6 +3,10 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <QFileInfo>
+#include <QString>
+
+#include <pwd.h>
+#include <unistd.h>
 
 namespace {
 constexpr const char *kAppDirName = "polecat-browser";
@@ -40,6 +44,24 @@ QString downloadsDir()
     if (d.isEmpty())
         d = QDir::homePath() + QStringLiteral("/Downloads");
     return d;
+}
+
+QString userDisplayName()
+{
+    // Prefer the human name from the password database, then the login name.
+    if (const struct passwd *pw = ::getpwuid(::getuid())) {
+        const QString gecos = QString::fromLocal8Bit(pw->pw_gecos ? pw->pw_gecos : "");
+        const QString full = gecos.section(QLatin1Char(','), 0, 0).trimmed();
+        if (!full.isEmpty())
+            return full;
+        const QString login = QString::fromLocal8Bit(pw->pw_name ? pw->pw_name : "");
+        if (!login.isEmpty())
+            return login;
+    }
+    const QString env = qEnvironmentVariable("USER");
+    if (!env.isEmpty())
+        return env;
+    return QDir::home().dirName();
 }
 
 QString databaseFile()
