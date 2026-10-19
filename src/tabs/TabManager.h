@@ -7,6 +7,8 @@
 #include <QPointer>
 #include <QWebEnginePage>
 
+#include "tabs/BrowserTab.h"
+
 class QStackedWidget;
 class QWebEngineProfile;
 

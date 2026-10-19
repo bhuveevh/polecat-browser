@@ -6,6 +6,8 @@
 #include <QDateTime>
 #include <QPointer>
 
+#include "browser/WebView.h"
+
 class QWebEngineProfile;
 
 namespace Polecat {
