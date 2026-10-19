@@ -2,6 +2,7 @@
 
 #include "app/AppContext.h"
 #include "browser/BrowserWindow.h"
+#include "tabs/TabManager.h"
 #include "bookmarks/BookmarkManager.h"
 #include "history/HistoryManager.h"
 #include "downloads/DownloadsManager.h"

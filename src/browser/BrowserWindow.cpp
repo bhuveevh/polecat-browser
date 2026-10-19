@@ -25,8 +25,12 @@
 #include "utils/Logging.h"
 #include "utils/UrlUtils.h"
 
+#include <QAbstractButton>
 #include <QApplication>
 #include <QCheckBox>
+#include <QDesktopServices>
+#include <QDir>
+#include <QFile>
 #include <QClipboard>
 #include <QCloseEvent>
 #include <QCursor>
@@ -44,6 +48,7 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QWebEngineFullScreenRequest>
+#include <QWebEngineHistory>
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
 #include <QWebEngineView>
@@ -686,7 +691,7 @@ void BrowserWindow::showPermissionPrompt(const QUrl &origin, QWebEnginePage::Fea
         box.setCheckBox(remember);
         box.setDefaultButton(deny);
         box.exec();
-        granted = (box.clickedButton() == allow);
+        granted = (box.clickedButton() == static_cast<QAbstractButton *>(allow));
         if (remember->isChecked())
             m_context.permissions->setDecision(host, feature,
                 granted ? PermissionManager::Allow : PermissionManager::Deny);
@@ -753,14 +758,21 @@ void BrowserWindow::printPage()
     BrowserTab *tab = m_tabs->currentTab();
     if (!tab)
         return;
-    QPrinter printer(QPrinter::HighResolution);
-    QPrintDialog dialog(&printer, this);
-    dialog.setWindowTitle(tr("Print page"));
-    if (dialog.exec() != QDialog::Accepted)
-        return;
-    tab->page()->print(&printer, [](bool ok) {
-        if (!ok)
-            qCWarning(lcUi) << "Printing failed";
+    // Qt 6 removed QWebEnginePage::print(QPrinter*). Export the page to a PDF
+    // and open it so the user can print from their PDF viewer.
+    tab->page()->printToPdf([this](const QByteArray &data) {
+        const QString path = QDir::temp().filePath(QStringLiteral("polecat-print.pdf"));
+        QFile file(path);
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::warning(this, tr("Print page"),
+                tr("Could not write the PDF file."));
+            return;
+        }
+        file.write(data);
+        file.close();
+        QMessageBox::information(this, tr("Print page"),
+            tr("The page has been exported to a PDF:\n%1\n\nOpen it to print.").arg(path));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
     });
 }
 

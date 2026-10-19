@@ -4,6 +4,7 @@
 #include "utils/Logging.h"
 #include "utils/UrlUtils.h"
 
+#include <QAbstractButton>
 #include <QAuthenticator>
 #include <QMessageBox>
 #include <QPushButton>
@@ -34,6 +35,10 @@ WebPage::WebPage(QWebEngineProfile *profile, SettingsManager *settings, QObject 
 
     connect(this, &QWebEnginePage::featurePermissionRequested,
             this, &WebPage::handleFeaturePermission);
+    // In Qt 6 certificateError is a signal, not a virtual method: the decision
+    // is applied through acceptCertificate()/rejectCertificate() on the error.
+    connect(this, &QWebEnginePage::certificateError,
+            this, &WebPage::handleCertificateError);
     // fullScreenRequested and authenticationRequired are Qt WebEngine signals;
     // the window connects to them directly on the page.
 }
@@ -81,12 +86,12 @@ QWebEnginePage *WebPage::createWindow(WebWindowType type)
     return nullptr;
 }
 
-bool WebPage::certificateError(const QWebEngineCertificateError &error)
+void WebPage::handleCertificateError(QWebEngineCertificateError error)
 {
     // Security rule: never silently bypass a certificate error. Ask the user.
     const QString host = error.url().host();
     QString reason;
-    switch (error.error()) {
+    switch (error.type()) {
     case QWebEngineCertificateError::CertificateCommonNameInvalid:
         reason = tr("The certificate is issued for a different website name.");
         break;
@@ -123,11 +128,13 @@ bool WebPage::certificateError(const QWebEngineCertificateError &error)
     box.setDefaultButton(qobject_cast<QPushButton *>(box.buttons().last()));
     box.exec();
 
-    const bool proceed = (box.clickedButton() == continueButton);
+    const bool proceed = (box.clickedButton() == static_cast<QAbstractButton *>(continueButton));
     if (proceed) {
         qCWarning(lcPrivacy) << "User overrode certificate error for" << host;
+        error.acceptCertificate();
+    } else {
+        error.rejectCertificate();
     }
-    return proceed;
 }
 
 bool WebPage::acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame)

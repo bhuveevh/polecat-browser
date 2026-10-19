@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAuthenticator>
+#include <QWebEngineCertificateError>
 #include <QWebEngineFullScreenRequest>
 #include <QWebEnginePage>
 #include <QUrl>
@@ -60,7 +61,6 @@ signals:
 
 protected:
     QWebEnginePage *createWindow(WebWindowType type) override;
-    bool certificateError(const QWebEngineCertificateError &error) override;
     bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override;
     void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level,
                                   const QString &message,
@@ -69,6 +69,9 @@ protected:
 
 private:
     void handleFeaturePermission(const QUrl &securityOrigin, Feature feature);
+    // Qt 6 delivers certificate errors through the QWebEnginePage::certificateError
+    // signal (not a virtual method); the decision is applied on the error object.
+    void handleCertificateError(QWebEngineCertificateError error);
     void applySettingsFromManager();
 
     SettingsManager *m_settings = nullptr;
