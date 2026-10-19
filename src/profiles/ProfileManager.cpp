@@ -109,6 +109,9 @@ void ProfileManager::applyCommonPolicy(QWebEngineProfile *profile, bool persiste
         s->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, false);
         s->setAttribute(QWebEngineSettings::ErrorPageEnabled, true);
         s->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
+        // The built-in PDF viewer needs plugins enabled as well as the PDF
+        // viewer flag; QWebEngineSettings::PluginsEnabled defaults to false.
+        s->setAttribute(QWebEngineSettings::PluginsEnabled, true);
         s->setAttribute(QWebEngineSettings::PdfViewerEnabled, true);
     }
 

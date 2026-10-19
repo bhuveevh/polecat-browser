@@ -69,6 +69,9 @@ void WebPage::applySettingsFromManager()
     s->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
     s->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
     s->setAttribute(QWebEngineSettings::ScrollAnimatorEnabled, false);
+    // The built-in PDF viewer needs plugins enabled as well as the PDF viewer
+    // flag; QWebEngineSettings::PluginsEnabled defaults to false.
+    s->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     s->setAttribute(QWebEngineSettings::PdfViewerEnabled, true);
 }
 
