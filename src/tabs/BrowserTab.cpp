@@ -27,7 +27,8 @@ BrowserTab::BrowserTab(int id,
     connect(m_view, &QWebEngineView::iconChanged, this, &BrowserTab::onIconChanged);
     connect(m_view, &QWebEngineView::loadStarted, this, &BrowserTab::onLoadStarted);
     connect(m_view, &QWebEngineView::loadFinished, this, &BrowserTab::onLoadFinished);
-    connect(m_view, &QWebEngineView::audioMutedChanged, this, &BrowserTab::onAudioMutedChanged);
+    // Qt 6: audioMutedChanged lives on QWebEnginePage, not QWebEngineView.
+    connect(m_view->page(), &QWebEnginePage::audioMutedChanged, this, &BrowserTab::onAudioMutedChanged);
 
     m_url = m_view->url();
     m_title = tr("New Tab");
