@@ -55,13 +55,13 @@ jobs:
         run: |
           cd build
           cpack -G DEB
-          ls -la polecat-browser_*.deb
+          ls -la *.deb
 
       - name: Upload the .deb as a workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: polecat-browser-deb
-          path: build/polecat-browser_*.deb
+          path: build/*.deb
           if-no-files-found: error
 
       - name: Attach the .deb to a Release (tags only)

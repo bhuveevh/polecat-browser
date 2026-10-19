@@ -234,6 +234,8 @@ set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-wayland")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 
 set(CPACK_GENERATOR "DEB")
+# Use the standard Debian package filename: polecat-browser_1.0.0_amd64.deb
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_DEB_COMPONENT_INSTALL OFF)
 
 include(CPack)
