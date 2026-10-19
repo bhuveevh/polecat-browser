@@ -6,6 +6,8 @@
 
 class QWebEngineProfile;
 class QContextMenuEvent;
+class QMenu;
+class QWebEngineContextMenuRequest;
 
 namespace Polecat {
 
@@ -29,12 +31,17 @@ public:
     bool isPrivate() const { return m_private; }
 
     // Loads a URL, handling Polecat's internal "about:" pages (about:newtab,
-    // about:private, about:blank) by rendering the bundled HTML for them.
+    // about:settings, about:private, about:blank) by rendering the bundled HTML
+    // for them.
     void loadUrl(const QUrl &url);
 
 signals:
-    // Emitted instead of showing a menu, so the window can compose one.
-    void contextMenuRequested(const QPoint &globalPos, const QPoint &viewPos);
+    // Emitted with a fully-built standard context menu (and the request that
+    // describes what was clicked) so the window can extend it before showing it.
+    // The receiver takes ownership of the menu.
+    void contextMenuRequested(QMenu *menu,
+                              QWebEngineContextMenuRequest *request,
+                              const QPoint &globalPos);
     void renderProcessCrashed();
     void renderProcessUnresponsive();
 
@@ -43,8 +50,10 @@ protected:
 
 private:
     void showCrashPage(const QString &detail);
+    QString buildSettingsHtml() const;
 
     WebPage *m_page = nullptr;
+    SettingsManager *m_settings = nullptr;
     bool m_private = false;
 };
 

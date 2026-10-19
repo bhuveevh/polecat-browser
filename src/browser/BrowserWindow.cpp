@@ -19,6 +19,7 @@
 #include "downloads/DownloadsPanel.h"
 #include "study/StudyPanel.h"
 #include "database/DatabaseManager.h"
+#include "privacy/PrivacyManager.h"
 #include "privacy/PermissionManager.h"
 #include "settings/SettingsManager.h"
 #include "profiles/ProfileManager.h"
@@ -44,6 +45,9 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QPlainTextEdit>
+#include <QTimer>
+#include <QUrlQuery>
+#include <QWebEngineContextMenuRequest>
 #include <QPushButton>
 #include <QPrintDialog>
 #include <QPrinter>
@@ -191,6 +195,7 @@ void BrowserWindow::buildLayout()
         rootLayout->addWidget(m_tabBar);
     rootLayout->addWidget(m_nav);
     rootLayout->addWidget(contentRow, 1);
+    rootLayout->addWidget(m_statusBar);
 
     setCentralWidget(central);
 
@@ -261,6 +266,7 @@ void BrowserWindow::wireTabManager()
             connect(page, &WebPage::upgradeRequested, this, [this](const QUrl &from, const QUrl &to) {
                 qCInfo(lcPrivacy) << "Upgraded to HTTPS:" << from.toString() << "->" << to.toString();
             });
+            connect(page, &WebPage::internalCommand, this, &BrowserWindow::onInternalCommand);
         }
     });
 }
@@ -386,8 +392,12 @@ void BrowserWindow::buildMenus()
 
     m_mainMenu->addSeparator();
 
+    // Settings opens in its own tab (like Chrome/Firefox), not a dialog.
     auto *settings = m_mainMenu->addAction(IconLoader::icon(QStringLiteral("settings")), tr("Settings"));
-    connect(settings, &QAction::triggered, this, &BrowserWindow::openSettingsRequested);
+    settings->setShortcut(QKeySequence(QStringLiteral("Ctrl+,")));
+    connect(settings, &QAction::triggered, this, [this]() {
+        openUrl(QUrl(QStringLiteral("about:settings")));
+    });
 
     auto *privacyNote = m_mainMenu->addAction(tr("Private Browsing Info"), this, [this]() {
         emit privacyNoteRequested();
@@ -559,7 +569,18 @@ void BrowserWindow::onBookmarkRequested()
         m_context.bookmarks->ensureRootFolder();
         m_context.bookmarks->addBookmark(-1, tab->displayTitle(), url);
     }
-    m_nav->setBookmarked(m_context.bookmarks->isBookmarked(url));
+    const bool now = m_context.bookmarks->isBookmarked(url);
+    m_nav->setBookmarked(now);
+
+    // Brief status feedback so the star click is visibly acknowledged.
+    if (m_statusLabel && m_statusBar) {
+        m_statusLabel->setText(now ? tr("Bookmark added") : tr("Bookmark removed"));
+        m_statusBar->show();
+        QTimer::singleShot(2000, this, [this]() {
+            if (m_statusBar)
+                m_statusBar->hide();
+        });
+    }
 }
 
 void BrowserWindow::onReaderRequested()
@@ -620,75 +641,104 @@ void BrowserWindow::showProfileMenu()
     menu.exec(QCursor::pos());
 }
 
-void BrowserWindow::showContextMenu(const QPoint &globalPos, const QPoint &viewPos)
+void BrowserWindow::showContextMenu(QMenu *menu, QWebEngineContextMenuRequest *request,
+                                    const QPoint &globalPos)
 {
-    Q_UNUSED(viewPos);
+    if (!menu)
+        return;
+
     BrowserTab *tab = m_tabs->currentTab();
-    if (!tab)
-        return;
-    WebPage *page = tab->page();
-    if (!page)
-        return;
+    WebPage *page = tab ? tab->page() : nullptr;
 
-    QMenu menu(this);
-    QAction *back = menu.addAction(tr("Back"));
-    back->setEnabled(tab->view()->history()->canGoBack());
-    QAction *forward = menu.addAction(tr("Forward"));
-    forward->setEnabled(tab->view()->history()->canGoForward());
-    QAction *reload = menu.addAction(tr("Reload"));
-    menu.addSeparator();
-
-    QAction *copy = menu.addAction(tr("Copy"));
-    copy->setEnabled(page->action(QWebEnginePage::Copy)->isEnabled());
-    QAction *selectAll = menu.addAction(tr("Select All"));
-    QAction *saveImage = menu.addAction(tr("Save Image…"));
-    saveImage->setVisible(false);
-
-    menu.addSeparator();
-    QAction *searchText = menu.addAction(tr("Search for selected text"));
-    QAction *translateText = menu.addAction(tr("Translate selected text"));
-    QAction *addVocab = menu.addAction(tr("Add selected word to vocabulary"));
-    QAction *addNote = menu.addAction(tr("Add to notes"));
-    QAction *addReading = menu.addAction(tr("Add to reading list"));
-
-    const QString selected = page->selectedText().trimmed();
+    // Qt WebEngine already filled the menu with the element-aware standard
+    // items (Back/Reload, Open link in new tab, Save image, Copy, Paste,
+    // View source, Inspect…). We only add what it does not cover.
+    const QUrl linkUrl = request ? request->linkUrl() : QUrl();
+    const QUrl mediaUrl = request ? request->mediaUrl() : QUrl();
+    const bool isImage = request
+        && request->mediaType() == QWebEngineContextMenuRequest::MediaTypeImage;
+    const QString selected = request ? request->selectedText().trimmed()
+                                     : (page ? page->selectedText().trimmed() : QString());
     const bool hasSelection = !selected.isEmpty();
-    searchText->setEnabled(hasSelection);
-    translateText->setEnabled(hasSelection);
-    addVocab->setEnabled(hasSelection && !selected.contains(QLatin1Char(' ')));
 
-    menu.addSeparator();
-    QAction *viewSrc = menu.addAction(tr("View Page Source"));
-    QAction *inspect = menu.addAction(tr("Inspect Element"));
+    auto hasItem = [menu](const QString &needle) {
+        for (QAction *a : menu->actions()) {
+            if (a->text().contains(needle, Qt::CaseInsensitive))
+                return true;
+        }
+        return false;
+    };
 
-    QAction *chosen = menu.exec(globalPos);
-    if (!chosen)
-        return;
+    if (!linkUrl.isEmpty() && !hasItem(tr("new tab"))) {
+        menu->addSeparator();
+        QAction *openLink = menu->addAction(tr("Open link in new tab"));
+        connect(openLink, &QAction::triggered, this, [this, linkUrl]() { openUrl(linkUrl, true); });
+    }
 
-    if (chosen == back)        tab->view()->back();
-    else if (chosen == forward) tab->view()->forward();
-    else if (chosen == reload)  tab->view()->reload();
-    else if (chosen == copy)    page->triggerAction(QWebEnginePage::Copy);
-    else if (chosen == selectAll) page->triggerAction(QWebEnginePage::SelectAll);
-    else if (chosen == searchText) {
-        const QUrl url = UrlUtils::toUrl(selected, m_context.settings->searchTemplate());
-        m_tabs->createTab(url);
-    } else if (chosen == translateText) {
-        const QString encoded = QString::fromUtf8(QUrl::toPercentEncoding(selected));
-        m_tabs->createTab(QUrl(QStringLiteral("https://translate.google.com/?sl=auto&tl=en&text=%1").arg(encoded)));
-    } else if (chosen == addVocab) {
-        m_sidebar->show();
-        m_sidebar->setCurrentSection(QStringLiteral("study"));
-    } else if (chosen == addNote) {
-        m_sidebar->show();
-        m_sidebar->setCurrentSection(QStringLiteral("study"));
-    } else if (chosen == addReading) {
-        m_sidebar->show();
-        m_sidebar->setCurrentSection(QStringLiteral("study"));
-    } else if (chosen == viewSrc) {
-        viewSource();
-    } else if (chosen == inspect) {
-        openDevTools();
+    if (isImage && !mediaUrl.isEmpty() && !hasItem(tr("image address"))) {
+        menu->addSeparator();
+        QAction *openImage = menu->addAction(tr("Open image in new tab"));
+        connect(openImage, &QAction::triggered, this, [this, mediaUrl]() { openUrl(mediaUrl); });
+        QAction *copyAddr = menu->addAction(tr("Copy image address"));
+        connect(copyAddr, &QAction::triggered, this, [mediaUrl]() {
+            QApplication::clipboard()->setText(mediaUrl.toString());
+        });
+    }
+
+    if (hasSelection) {
+        menu->addSeparator();
+        const QString shortSel = selected.length() > 28 ? selected.left(28) + QStringLiteral("…")
+                                                        : selected;
+        QAction *search = menu->addAction(tr("Search for \"%1\"").arg(shortSel));
+        connect(search, &QAction::triggered, this, [this, selected]() {
+            openUrl(UrlUtils::toUrl(selected, m_context.settings->searchTemplate()));
+        });
+        QAction *translate = menu->addAction(tr("Translate selection"));
+        connect(translate, &QAction::triggered, this, [this, selected]() {
+            const QString encoded = QString::fromUtf8(QUrl::toPercentEncoding(selected));
+            openUrl(QUrl(QStringLiteral("https://translate.google.com/?sl=auto&tl=en&text=%1")
+                             .arg(encoded)));
+        });
+        QAction *vocab = menu->addAction(tr("Add word to vocabulary"));
+        vocab->setEnabled(!selected.contains(QLatin1Char(' ')));
+        connect(vocab, &QAction::triggered, this, [this]() {
+            m_sidebar->show();
+            m_sidebar->setCurrentSection(QStringLiteral("study"));
+        });
+    }
+
+    if (!hasItem(tr("page source"))) {
+        menu->addSeparator();
+        QAction *viewSrc = menu->addAction(tr("View page source"));
+        connect(viewSrc, &QAction::triggered, this, &BrowserWindow::viewSource);
+    }
+    if (m_context.settings->value(SettingsManager::kDevToolsEnabled(), true).toBool()
+        && !hasItem(tr("inspect"))) {
+        QAction *inspect = menu->addAction(tr("Inspect element"));
+        connect(inspect, &QAction::triggered, this, &BrowserWindow::openDevTools);
+    }
+
+    menu->exec(globalPos);
+    menu->deleteLater();
+}
+
+void BrowserWindow::onInternalCommand(const QUrl &url)
+{
+    // Handles "polecat:" links from the built-in pages (e.g. Settings).
+    const QString verb = url.path();
+    const QUrlQuery query(url);
+
+    if (verb == QLatin1String("set")) {
+        const QString key = query.queryItemValue(QStringLiteral("key"));
+        const QString value = query.queryItemValue(QStringLiteral("value"));
+        if (!key.isEmpty())
+            m_context.settings->setValue(key, value);
+    } else if (verb == QLatin1String("action")) {
+        const QString name = query.queryItemValue(QStringLiteral("name"));
+        if (name == QLatin1String("clearData"))
+            m_context.privacy->clearEverything();
+        else if (name == QLatin1String("resetSettings"))
+            m_context.settings->reset();
     }
 }
 

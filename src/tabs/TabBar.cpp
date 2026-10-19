@@ -9,6 +9,37 @@
 #include <QTabBar>
 #include <QToolButton>
 
+namespace {
+
+// A QTabBar that keeps tabs within a sane width range. Without this a tab with
+// a long title grows without bound; with it, titles elide at a Chrome-like
+// maximum width instead.
+class BrowserTabBar : public QTabBar
+{
+public:
+    explicit BrowserTabBar(QWidget *parent = nullptr) : QTabBar(parent) {}
+
+protected:
+    QSize tabSizeHint(int index) const override
+    {
+        QSize s = QTabBar::tabSizeHint(index);
+        s.setWidth(qBound(kMinTabWidth, s.width(), kMaxTabWidth));
+        return s;
+    }
+    QSize minimumTabSizeHint(int index) const override
+    {
+        QSize s = QTabBar::minimumTabSizeHint(index);
+        s.setWidth(kMinTabWidth);
+        return s;
+    }
+
+private:
+    static constexpr int kMinTabWidth = 120;
+    static constexpr int kMaxTabWidth = 240;
+};
+
+} // namespace
+
 namespace Polecat {
 
 TabBar::TabBar(QWidget *parent)
@@ -23,7 +54,7 @@ TabBar::TabBar(QWidget *parent)
     layout->setContentsMargins(4, 2, 4, 0);
     layout->setSpacing(2);
 
-    m_bar = new QTabBar(this);
+    m_bar = new BrowserTabBar(this);
     m_bar->setObjectName(QStringLiteral("mainTabBar"));
     m_bar->setExpanding(false);
     m_bar->setMovable(true);

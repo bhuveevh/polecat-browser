@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings</title>
+<style>
+  :root {
+    --bg:#fff; --fg:#202124; --muted:#5f6368; --card:#fff; --line:#dadce0;
+    --field:#f1f3f4; --accent:#3d78b8; --hover:#f1f3f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#202124; --fg:#e8eaed; --muted:#9aa0a6; --card:#292a2d; --line:#3c4043;
+      --field:#303134; --accent:#8ab4f8; --hover:#35363a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+    font-size:14px; line-height:1.5;
+  }
+  header { padding:22px 32px 6px; }
+  header h1 { margin:0; font-size:22px; font-weight:600; }
+  .wrap { display:flex; gap:24px; padding:12px 32px 60px; max-width:1080px; }
+  nav { width:200px; flex:0 0 auto; position:sticky; top:12px; align-self:flex-start; }
+  nav a {
+    display:block; padding:9px 14px; border-radius:20px; color:var(--fg);
+    text-decoration:none; margin-bottom:2px;
+  }
+  nav a:hover { background:var(--hover); }
+  main { flex:1; min-width:0; }
+  section { margin-bottom:30px; scroll-margin-top:12px; }
+  section h2 { font-size:16px; font-weight:600; margin:0 0 10px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .row {
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:14px 18px; border-top:1px solid var(--line);
+  }
+  .row:first-child { border-top:0; }
+  .row .label { font-weight:500; }
+  .row .hint { color:var(--muted); font-size:12.5px; margin-top:2px; }
+  select, input[type=text] {
+    background:var(--field); color:var(--fg); border:1px solid transparent;
+    border-radius:8px; padding:8px 10px; font:inherit; min-width:210px; outline:none;
+  }
+  select:focus, input[type=text]:focus { border-color:var(--accent); }
+  .switch { position:relative; width:44px; height:24px; flex:0 0 auto; }
+  .switch input { opacity:0; width:0; height:0; }
+  .slider {
+    position:absolute; inset:0; background:#bdc1c6; border-radius:24px;
+    cursor:pointer; transition:background .15s;
+  }
+  .slider:before {
+    content:""; position:absolute; height:18px; width:18px; left:3px; top:3px;
+    background:#fff; border-radius:50%; transition:transform .15s;
+  }
+  .switch input:checked + .slider { background:var(--accent); }
+  .switch input:checked + .slider:before { transform:translateX(20px); }
+  button.act {
+    background:var(--field); color:var(--fg); border:1px solid var(--line);
+    border-radius:20px; padding:8px 18px; font:inherit; cursor:pointer;
+  }
+  button.act:hover { background:var(--hover); }
+  button.danger { color:#d93025; border-color:#d93025; }
+  .toast {
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+    background:#323639; color:#fff; padding:10px 18px; border-radius:8px;
+    opacity:0; transition:opacity .2s; pointer-events:none; font-size:13px;
+  }
+  .toast.show { opacity:1; }
+</style>
+</head>
+<body>
+<script id="state" type="application/json">__POLECAT_STATE_JSON__</script>
+
+<header><h1>Settings</h1></header>
+
+<div class="wrap">
+  <nav>
+    <a href="#appearance">Appearance</a>
+    <a href="#startup">On startup</a>
+    <a href="#privacy">Privacy &amp; security</a>
+    <a href="#downloads">Downloads</a>
+    <a href="#tabs">Tabs</a>
+    <a href="#advanced">Advanced</a>
+    <a href="#reset">Reset</a>
+  </nav>
+
+  <main>
+    <section id="appearance">
+      <h2>Appearance</h2>
+      <div class="card">
+        <div class="row"><div><div class="label">Theme</div>
+          <div class="hint">Follow the system, or force light or dark.</div></div>
+          <select data-key="appearance/theme">
+            <option value="system">Follow system</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select></div>
+        <div class="row"><div><div class="label">Use system title bar</div>
+          <div class="hint">Turn off the built-in Chrome-style title bar (needs a restart).</div></div>
+          <label class="switch"><input type="checkbox" data-key="appearance/nativeTitleBar"><span class="slider"></span></label></div>
+      </div>
+    </section>
+
+    <section id="startup">
+      <h2>On startup</h2>
+      <div class="card">
+        <div class="row"><div><div class="label">When Polecat opens</div></div>
+          <select data-key="general/startup">
+            <option value="newtab">Open the New Tab page</option>
+            <option value="home">Open my home page</option>
+            <option value="restore">Reopen my last tabs</option>
+          </select></div>
+        <div class="row"><div><div class="label">Home page</div></div>
+          <input type="text" data-key="general/homePage" placeholder="about:newtab"></div>
+        <div class="row"><div><div class="label">Search engine</div>
+          <div class="hint">Used when you type words instead of an address.</div></div>
+          <input type="text" data-key="general/searchEngine"></div>
+      </div>
+    </section>
+
+    <section id="privacy">
+      <h2>Privacy &amp; security</h2>
+      <div class="card">
+        <div class="row"><div class="label">Block ads and trackers</div>
+          <label class="switch"><input type="checkbox" data-key="privacy/blockAdsTrackers"><span class="slider"></span></label></div>
+        <div class="row"><div class="label">Block third-party cookies</div>
+          <label class="switch"><input type="checkbox" data-key="privacy/blockThirdPartyCookies"><span class="slider"></span></label></div>
+        <div class="row"><div><div class="label">HTTPS-only mode</div>
+          <div class="hint">Upgrade plain http:// addresses to https://.</div></div>
+          <label class="switch"><input type="checkbox" data-key="privacy/httpsOnly"><span class="slider"></span></label></div>
+        <div class="row"><div class="label">Send "Do Not Track"</div>
+          <label class="switch"><input type="checkbox" data-key="privacy/doNotTrack"><span class="slider"></span></label></div>
+        <div class="row"><div class="label">Enable JavaScript</div>
+          <label class="switch"><input type="checkbox" data-key="privacy/javascriptEnabled"><span class="slider"></span></label></div>
+        <div class="row"><div class="label">Load images</div>
+          <label class="switch"><input type="checkbox" data-key="privacy/imagesEnabled"><span class="slider"></span></label></div>
+        <div class="row"><div class="label">Block pop-ups</div>
+          <label class="switch"><input type="checkbox" data-key="privacy/popupBlocking"><span class="slider"></span></label></div>
+        <div class="row"><div><div class="label">Clear browsing data</div>
+          <div class="hint">History, cookies, cache, downloads list and site permissions.</div></div>
+          <button class="act danger" onclick="act('clearData')">Clear now</button></div>
+      </div>
+    </section>
+
+    <section id="downloads">
+      <h2>Downloads</h2>
+      <div class="card">
+        <div class="row"><div class="label">Ask where to save each file</div>
+          <label class="switch"><input type="checkbox" data-key="downloads/askWhereToSave"><span class="slider"></span></label></div>
+        <div class="row"><div><div class="label">Download folder</div>
+          <div class="hint">Leave empty to use your system download folder.</div></div>
+          <input type="text" data-key="downloads/defaultDir" placeholder="~/Downloads"></div>
+      </div>
+    </section>
+
+    <section id="tabs">
+      <h2>Tabs</h2>
+      <div class="card">
+        <div class="row"><div class="label">Show the tab strip</div>
+          <label class="switch"><input type="checkbox" data-key="tabs/showTabBar"><span class="slider"></span></label></div>
+        <div class="row"><div class="label">Restore tabs on restart</div>
+          <label class="switch"><input type="checkbox" data-key="tabs/restoreSession"><span class="slider"></span></label></div>
+      </div>
+    </section>
+
+    <section id="advanced">
+      <h2>Advanced</h2>
+      <div class="card">
+        <div class="row"><div><div class="label">Developer tools</div>
+          <div class="hint">Adds "Inspect element" to the right-click menu.</div></div>
+          <label class="switch"><input type="checkbox" data-key="advanced/devTools"><span class="slider"></span></label></div>
+        <div class="row"><div class="label">Verbose logging</div>
+          <label class="switch"><input type="checkbox" data-key="advanced/verboseLogging"><span class="slider"></span></label></div>
+      </div>
+    </section>
+
+    <section id="reset">
+      <h2>Reset</h2>
+      <div class="card">
+        <div class="row"><div><div class="label">Restore all settings to defaults</div>
+          <div class="hint">Bookmarks, history and passwords are not touched.</div></div>
+          <button class="act danger" onclick="act('resetSettings')">Reset settings</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  var S = {};
+  try { S = JSON.parse(document.getElementById('state').textContent) || {}; } catch (e) { S = {}; }
+
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 1600);
+  }
+  function send(k, v) {
+    location.href = 'polecat:set?key=' + encodeURIComponent(k) + '&value=' + encodeURIComponent(v);
+  }
+  function act(name) {
+    location.href = 'polecat:action?name=' + encodeURIComponent(name);
+  }
+
+  // Populate controls from the current state.
+  document.querySelectorAll('[data-key]').forEach(function (el) {
+    var key = el.getAttribute('data-key');
+    var val = S[key];
+    if (val === undefined || val === null) return;
+    if (el.type === 'checkbox') el.checked = (val === true || val === 'true' || val === 1);
+    else el.value = String(val);
+  });
+
+  // Persist on change.
+  document.querySelectorAll('[data-key]').forEach(function (el) {
+    var evt = (el.tagName === 'SELECT' || el.type === 'checkbox') ? 'change' : 'blur';
+    el.addEventListener(evt, function () {
+      var key = el.getAttribute('data-key');
+      var val = (el.type === 'checkbox') ? (el.checked ? 'true' : 'false') : el.value;
+      send(key, val);
+      toast('Saved');
+    });
+  });
+</script>
+</body>
+</html>

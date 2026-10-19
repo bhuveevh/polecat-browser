@@ -1,10 +1,17 @@
 #include "browser/WebView.h"
 
 #include "browser/WebPage.h"
+#include "settings/SettingsManager.h"
 #include "utils/Logging.h"
 
 #include <QContextMenuEvent>
 #include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QMenu>
+#include <QVariant>
+#include <QWebEngineContextMenuRequest>
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
 
@@ -15,6 +22,7 @@ WebView::WebView(QWebEngineProfile *profile,
                  bool isPrivate,
                  QWidget *parent)
     : QWebEngineView(parent)
+    , m_settings(settings)
     , m_private(isPrivate)
 {
     m_page = new WebPage(profile, settings, this);
@@ -48,6 +56,14 @@ void WebView::loadUrl(const QUrl &url)
         else if (page == QLatin1String("private"))
             resource = QStringLiteral(":/html/privatenote.html");
 
+        if (page == QLatin1String("settings")) {
+            const QString html = buildSettingsHtml();
+            if (!html.isEmpty()) {
+                setHtml(html, url);
+                return;
+            }
+        }
+
         if (!resource.isEmpty()) {
             QFile f(resource);
             if (f.open(QIODevice::ReadOnly)) {
@@ -63,11 +79,48 @@ void WebView::loadUrl(const QUrl &url)
     setUrl(url);
 }
 
+QString WebView::buildSettingsHtml() const
+{
+    QFile f(QStringLiteral(":/html/settings.html"));
+    if (!f.open(QIODevice::ReadOnly))
+        return QString();
+    QString html = QString::fromUtf8(f.readAll());
+
+    static const char *const keys[] = {
+        "appearance/theme", "appearance/nativeTitleBar",
+        "general/startup", "general/homePage", "general/searchEngine",
+        "privacy/blockAdsTrackers", "privacy/blockThirdPartyCookies", "privacy/httpsOnly",
+        "privacy/doNotTrack", "privacy/javascriptEnabled", "privacy/imagesEnabled",
+        "privacy/popupBlocking",
+        "downloads/askWhereToSave", "downloads/defaultDir",
+        "tabs/showTabBar", "tabs/restoreSession",
+        "advanced/devTools", "advanced/verboseLogging",
+    };
+
+    QJsonObject obj;
+    for (const char *const k : keys) {
+        const QString key = QString::fromLatin1(k);
+        const QVariant v = m_settings ? m_settings->value(key) : QVariant();
+        obj.insert(key, QJsonValue::fromVariant(v));
+    }
+    const QString json = QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    html.replace(QStringLiteral("__POLECAT_STATE_JSON__"), json);
+    return html;
+}
+
 void WebView::contextMenuEvent(QContextMenuEvent *event)
 {
-    // Forward to the window; if nobody handles it, fall back to the default
-    // WebEngine menu so the browser is never left without a context menu.
-    emit contextMenuRequested(event->globalPos(), event->pos());
+    // Let Qt WebEngine build its element-aware standard menu (Back, Reload,
+    // Save page, Open link in new tab, Save image, Copy, View source, Inspect…),
+    // then hand it to the window to extend before it is shown.
+    QMenu *menu = createStandardContextMenu();
+    if (!menu) {
+        QWebEngineView::contextMenuEvent(event);
+        return;
+    }
+    // lastContextMenuRequest() is only valid during this call.
+    emit contextMenuRequested(menu, lastContextMenuRequest(), event->globalPos());
+    event->accept();
 }
 
 void WebView::showCrashPage(const QString &detail)

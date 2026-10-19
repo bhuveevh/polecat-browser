@@ -142,6 +142,13 @@ void WebPage::handleCertificateError(QWebEngineCertificateError error)
 
 bool WebPage::acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame)
 {
+    // Internal command links (Settings page, etc.): handled by the application,
+    // never navigated to.
+    if (url.scheme() == QLatin1String("polecat")) {
+        emit internalCommand(url);
+        return false;
+    }
+
     // Optional HTTPS-only mode: upgrade plain http main-frame navigations.
     if (isMainFrame && m_settings
         && m_settings->value(SettingsManager::kHttpsOnly(), false).toBool()

@@ -52,6 +52,9 @@ signals:
     void permissionRequested(const QUrl &origin, QWebEnginePage::Feature feature);
     // Emitted when HTTPS-only mode rewrites an http navigation.
     void upgradeRequested(const QUrl &from, const QUrl &to);
+    // Emitted for internal "polecat:" command links (e.g. the Settings page);
+    // the application handles them and the navigation is cancelled.
+    void internalCommand(const QUrl &url);
     // Forwarded JavaScript console output.
     void consoleMessage(const QString &message, int line, const QString &source);
 

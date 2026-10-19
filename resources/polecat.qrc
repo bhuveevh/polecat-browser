@@ -1,50 +1,33 @@
 <RCC>
     <qresource prefix="/">
         <file>icons/org.opentiaos.PolecatBrowser.svg</file>
-        <file>icons/polecat-back.svg</file>
-        <file>icons/polecat-forward.svg</file>
-        <file>icons/polecat-reload.svg</file>
-        <file>icons/polecat-stop.svg</file>
-        <file>icons/polecat-home.svg</file>
-        <file>icons/polecat-new-tab.svg</file>
-        <file>icons/polecat-close.svg</file>
-        <file>icons/polecat-bookmark.svg</file>
-        <file>icons/polecat-bookmarks.svg</file>
-        <file>icons/polecat-history.svg</file>
-        <file>icons/polecat-downloads.svg</file>
-        <file>icons/polecat-menu.svg</file>
-        <file>icons/polecat-private.svg</file>
-        <file>icons/polecat-reader.svg</file>
-        <file>icons/polecat-find.svg</file>
-        <file>icons/polecat-sidebar.svg</file>
-        <file>icons/polecat-secure.svg</file>
-        <file>icons/polecat-insecure.svg</file>
-        <file>icons/polecat-settings.svg</file>
-        <file>icons/material/arrow_back.svg</file>
-        <file>icons/material/arrow_forward.svg</file>
-        <file>icons/material/refresh.svg</file>
-        <file>icons/material/close.svg</file>
-        <file>icons/material/home.svg</file>
-        <file>icons/material/add.svg</file>
-        <file>icons/material/star.svg</file>
-        <file>icons/material/bookmarks.svg</file>
-        <file>icons/material/history.svg</file>
-        <file>icons/material/download.svg</file>
-        <file>icons/material/more_vert.svg</file>
-        <file>icons/material/visibility_off.svg</file>
-        <file>icons/material/article.svg</file>
-        <file>icons/material/search.svg</file>
-        <file>icons/material/view_sidebar.svg</file>
-        <file>icons/material/lock.svg</file>
-        <file>icons/material/lock_open.svg</file>
-        <file>icons/material/settings.svg</file>
-        <file>icons/material/account_circle.svg</file>
-        <file>icons/material/remove.svg</file>
-        <file>icons/material/crop_square.svg</file>
-        <file>icons/material/filter_none.svg</file>
+        <file>icons/ms/account_circle.svg</file>
+        <file>icons/ms/add.svg</file>
+        <file>icons/ms/arrow_back.svg</file>
+        <file>icons/ms/arrow_forward.svg</file>
+        <file>icons/ms/article.svg</file>
+        <file>icons/ms/bookmarks.svg</file>
+        <file>icons/ms/close.svg</file>
+        <file>icons/ms/crop_square.svg</file>
+        <file>icons/ms/download.svg</file>
+        <file>icons/ms/filter_none.svg</file>
+        <file>icons/ms/history.svg</file>
+        <file>icons/ms/home.svg</file>
+        <file>icons/ms/lock.svg</file>
+        <file>icons/ms/lock_open.svg</file>
+        <file>icons/ms/more_vert.svg</file>
+        <file>icons/ms/refresh.svg</file>
+        <file>icons/ms/remove.svg</file>
+        <file>icons/ms/search.svg</file>
+        <file>icons/ms/settings.svg</file>
+        <file>icons/ms/star.svg</file>
+        <file>icons/ms/star_filled.svg</file>
+        <file>icons/ms/view_sidebar.svg</file>
+        <file>icons/ms/visibility_off.svg</file>
         <file>html/newtab.html</file>
         <file>html/error.html</file>
         <file>html/privatenote.html</file>
+        <file>html/settings.html</file>
         <file>filters/easylist-sample.txt</file>
     </qresource>
 </RCC>

@@ -12,6 +12,7 @@
 class QLabel;
 class QMenu;
 class QToolBar;
+class QWebEngineContextMenuRequest;
 
 namespace Polecat {
 
@@ -88,7 +89,9 @@ private slots:
     void onReaderRequested();
     void showMainMenu();
     void showProfileMenu();
-    void showContextMenu(const QPoint &globalPos, const QPoint &viewPos);
+    void showContextMenu(QMenu *menu, QWebEngineContextMenuRequest *request,
+                         const QPoint &globalPos);
+    void onInternalCommand(const QUrl &url);
     void onVisitRecorded(const QString &title, const QUrl &url);
     void onPermissionRequested(const QUrl &origin, QWebEnginePage::Feature feature);
     void onFullScreenRequested(QWebEngineFullScreenRequest request);

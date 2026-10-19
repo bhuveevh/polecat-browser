@@ -14,6 +14,7 @@
 #include <QSettings>
 #include <QString>
 #include <QStringList>
+#include <QWebEngineUrlScheme>
 
 namespace {
 
@@ -32,6 +33,14 @@ bool readBoolSetting(const QString &key, bool fallback)
 
 int main(int argc, char *argv[])
 {
+    // Register Polecat's internal command scheme (used by the built-in pages,
+    // e.g. the Settings page) before the WebEngine initialises.
+    QWebEngineUrlScheme polecatScheme(QByteArrayLiteral("polecat"));
+    polecatScheme.setSyntax(QWebEngineUrlScheme::Path);
+    polecatScheme.setFlags(QWebEngineUrlScheme::LocalScheme
+                           | QWebEngineUrlScheme::LocalAccessAllowed);
+    QWebEngineUrlScheme::registerScheme(polecatScheme);
+
     // These attributes must be set before QApplication is constructed.
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 

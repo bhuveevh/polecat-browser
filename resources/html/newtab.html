@@ -5,58 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>New Tab</title>
 <style>
-  :root { color-scheme: light dark; }
+  :root {
+    --bg: #ffffff; --fg: #202124; --muted: #5f6368;
+    --field: #f1f3f4; --field-focus: #ffffff; --tile: #f8f9fa;
+    --tile-hover: #eef0f2; --border: #dadce0; --accent: #3d78b8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #202124; --fg: #e8eaed; --muted: #9aa0a6;
+      --field: #303134; --field-focus: #303134; --tile: #2a2b2e;
+      --tile-hover: #35363a; --border: #3c4043; --accent: #8ab4f8;
+    }
+  }
   * { box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
-    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 28px;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: light-dark(#fafafa, #1e1e1e);
-    color: light-dark(#202124, #f5f5f5);
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 34px; padding: 40px 20px;
   }
-  .brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 600; }
-  .dot { width: 26px; height: 26px; border-radius: 8px;
-         background: linear-gradient(135deg, #D88A24, #3D78B8); }
-  form { width: min(560px, 86vw); display: flex; }
-  input[type=text] {
-    flex: 1; padding: 14px 16px; font-size: 16px; border-radius: 12px;
-    border: 1px solid light-dark(#d8d8d8, #3a3a3a);
-    background: light-dark(#ffffff, #252526); color: inherit;
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .mark {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: linear-gradient(135deg, #d88a24, #3d78b8);
+    display: grid; place-items: center; color: #fff; font-size: 30px; font-weight: 700;
   }
-  input[type=text]:focus { outline: none; border-color: #3D78B8; }
-  .links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
-           width: min(640px, 90vw); }
-  .links a {
-    text-decoration: none; color: inherit; padding: 12px 16px; border-radius: 12px;
-    background: light-dark(#ffffff, #252526);
-    border: 1px solid light-dark(#e2e2e2, #333);
-    min-width: 120px; text-align: center; font-size: 14px;
+  .name { font-size: 30px; font-weight: 600; letter-spacing: -0.5px; }
+  form { width: min(640px, 92vw); }
+  .search {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    background: var(--field); border: 1px solid transparent;
+    border-radius: 28px; padding: 0 20px; height: 52px;
+    transition: background .15s, border-color .15s, box-shadow .15s;
   }
-  .links a:hover { border-color: #D88A24; }
-  .note { font-size: 12px; opacity: 0.6; max-width: 520px; text-align: center; }
+  .search:focus-within {
+    background: var(--field-focus); border-color: var(--border);
+    box-shadow: 0 1px 6px rgba(32,33,36,.28);
+  }
+  .search svg { width: 20px; height: 20px; fill: var(--muted); flex: 0 0 auto; }
+  .search input {
+    flex: 1; border: 0; outline: 0; background: transparent;
+    color: var(--fg); font-size: 16px; height: 100%;
+  }
+  .tiles {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 14px; width: min(640px, 92vw);
+  }
+  .tile {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 16px 8px; border-radius: 14px; text-decoration: none;
+    color: var(--fg); background: var(--tile); border: 1px solid transparent;
+    font-size: 12.5px; text-align: center;
+    transition: background .15s, border-color .15s;
+  }
+  .tile:hover { background: var(--tile-hover); border-color: var(--border); }
+  .tile .bubble {
+    width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 18px; font-weight: 600; color: #fff;
+  }
+  .note { font-size: 12px; color: var(--muted); max-width: 560px; text-align: center; }
+  @media (max-width: 560px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
 </style>
 </head>
 <body>
-  <div class="brand"><span class="dot"></span> Polecat Browser</div>
-  <form onsubmit="go(event)">
-    <input id="q" type="text" autofocus
-           placeholder="Search or enter a web address" aria-label="Search or enter a web address">
-  </form>
-  <div class="links">
-    <a href="https://en.wikipedia.org">Wikipedia</a>
-    <a href="https://www.khanacademy.org">Khan Academy</a>
-    <a href="https://www.gutenberg.org">Gutenberg</a>
-    <a href="https://arxiv.org">arXiv</a>
-    <a href="https://en.wiktionary.org">Wiktionary</a>
+  <div class="logo">
+    <div class="mark">P</div>
+    <div class="name">Polecat</div>
   </div>
-  <p class="note">This page makes no network requests of its own and stores
-     nothing on your device.</p>
+
+  <form onsubmit="go(event)">
+    <label class="search">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+      <input id="q" type="text" autofocus
+             placeholder="Search the web or type a URL"
+             aria-label="Search the web or type a URL">
+    </label>
+  </form>
+
+  <div class="tiles" id="tiles"></div>
+
+  <p class="note">This page makes no network requests of its own and stores nothing on your device.</p>
+
 <script>
+  var SHORTCUTS = [
+    ["Wikipedia",  "https://en.wikipedia.org", "#5f6368"],
+    ["YouTube",    "https://www.youtube.com", "#ff0000"],
+    ["Gmail",      "https://mail.google.com", "#ea4335"],
+    ["GitHub",     "https://github.com",      "#24292f"],
+    ["Maps",       "https://maps.google.com", "#1a73e8"],
+    ["Khan",       "https://www.khanacademy.org", "#14bf96"],
+    ["News",       "https://news.google.com", "#fbbc05"],
+    ["Reddit",     "https://www.reddit.com",  "#ff4500"],
+    ["Amazon",     "https://www.amazon.in",   "#232f3e"],
+    ["Stack",      "https://stackoverflow.com", "#f48024"]
+  ];
+  var host = document.getElementById('tiles');
+  SHORTCUTS.forEach(function (s) {
+    var a = document.createElement('a');
+    a.className = 'tile'; a.href = s[1];
+    var b = document.createElement('div');
+    b.className = 'bubble'; b.style.background = s[2]; b.textContent = s[0][0];
+    var t = document.createElement('div'); t.textContent = s[0];
+    a.appendChild(b); a.appendChild(t); host.appendChild(a);
+  });
+
   function go(e) {
     e.preventDefault();
     var v = document.getElementById('q').value.trim();
     if (!v) return;
-    var looksLikeUrl = /^(https?:\/\/|about:|file:)/i.test(v) ||
+    var looksLikeUrl = /^(https?:\/\/|about:|file:|ftp:)/i.test(v) ||
                        (/^[^\s]+\.[^\s]{2,}/.test(v) && v.indexOf(' ') === -1);
     if (looksLikeUrl) {
       location.href = /^[a-z]+:/i.test(v) ? v : ('https://' + v);

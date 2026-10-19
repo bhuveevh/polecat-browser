@@ -6,40 +6,58 @@
 #include <QPainter>
 #include <QPalette>
 #include <QPixmap>
+#include <QStyle>
 
 namespace {
 
-// Logical name -> bundled Google Material Design icon (24x24 SVG under :/icons/material/).
-// These are used ahead of the user's icon theme so the toolbar has a single,
-// modern, consistent look.
+// Logical name -> bundled Google "Material Symbols" icon (rounded style,
+// 24x24 SVG under :/icons/ms/). These are the modern Material 3 glyphs and are
+// used ahead of the user's icon theme so the toolbar has one consistent,
+// up-to-date look.
 const QHash<QString, QString> &materialRegistry()
 {
     static const QHash<QString, QString> reg = {
-        {QStringLiteral("back"),      QStringLiteral(":/icons/material/arrow_back.svg")},
-        {QStringLiteral("forward"),   QStringLiteral(":/icons/material/arrow_forward.svg")},
-        {QStringLiteral("reload"),    QStringLiteral(":/icons/material/refresh.svg")},
-        {QStringLiteral("stop"),      QStringLiteral(":/icons/material/close.svg")},
-        {QStringLiteral("home"),      QStringLiteral(":/icons/material/home.svg")},
-        {QStringLiteral("new-tab"),   QStringLiteral(":/icons/material/add.svg")},
-        {QStringLiteral("close"),     QStringLiteral(":/icons/material/close.svg")},
-        {QStringLiteral("bookmark"),  QStringLiteral(":/icons/material/star.svg")},
-        {QStringLiteral("bookmarks"), QStringLiteral(":/icons/material/bookmarks.svg")},
-        {QStringLiteral("history"),   QStringLiteral(":/icons/material/history.svg")},
-        {QStringLiteral("downloads"), QStringLiteral(":/icons/material/download.svg")},
-        {QStringLiteral("menu"),      QStringLiteral(":/icons/material/more_vert.svg")},
-        {QStringLiteral("private"),   QStringLiteral(":/icons/material/visibility_off.svg")},
-        {QStringLiteral("reader"),    QStringLiteral(":/icons/material/article.svg")},
-        {QStringLiteral("find"),      QStringLiteral(":/icons/material/search.svg")},
-        {QStringLiteral("sidebar"),   QStringLiteral(":/icons/material/view_sidebar.svg")},
-        {QStringLiteral("secure"),    QStringLiteral(":/icons/material/lock.svg")},
-        {QStringLiteral("insecure"),  QStringLiteral(":/icons/material/lock_open.svg")},
-        {QStringLiteral("settings"),  QStringLiteral(":/icons/material/settings.svg")},
-        {QStringLiteral("profile"),   QStringLiteral(":/icons/material/account_circle.svg")},
-        {QStringLiteral("win-minimize"), QStringLiteral(":/icons/material/remove.svg")},
-        {QStringLiteral("win-maximize"), QStringLiteral(":/icons/material/crop_square.svg")},
-        {QStringLiteral("win-restore"),  QStringLiteral(":/icons/material/filter_none.svg")},
+        {QStringLiteral("back"),      QStringLiteral(":/icons/ms/arrow_back.svg")},
+        {QStringLiteral("forward"),   QStringLiteral(":/icons/ms/arrow_forward.svg")},
+        {QStringLiteral("reload"),    QStringLiteral(":/icons/ms/refresh.svg")},
+        {QStringLiteral("stop"),      QStringLiteral(":/icons/ms/close.svg")},
+        {QStringLiteral("home"),      QStringLiteral(":/icons/ms/home.svg")},
+        {QStringLiteral("new-tab"),   QStringLiteral(":/icons/ms/add.svg")},
+        {QStringLiteral("close"),     QStringLiteral(":/icons/ms/close.svg")},
+        {QStringLiteral("bookmark"),  QStringLiteral(":/icons/ms/star.svg")},
+        {QStringLiteral("bookmarked"),QStringLiteral(":/icons/ms/star_filled.svg")},
+        {QStringLiteral("bookmarks"), QStringLiteral(":/icons/ms/bookmarks.svg")},
+        {QStringLiteral("history"),   QStringLiteral(":/icons/ms/history.svg")},
+        {QStringLiteral("downloads"), QStringLiteral(":/icons/ms/download.svg")},
+        {QStringLiteral("menu"),      QStringLiteral(":/icons/ms/more_vert.svg")},
+        {QStringLiteral("private"),   QStringLiteral(":/icons/ms/visibility_off.svg")},
+        {QStringLiteral("reader"),    QStringLiteral(":/icons/ms/article.svg")},
+        {QStringLiteral("find"),      QStringLiteral(":/icons/ms/search.svg")},
+        {QStringLiteral("sidebar"),   QStringLiteral(":/icons/ms/view_sidebar.svg")},
+        {QStringLiteral("secure"),    QStringLiteral(":/icons/ms/lock.svg")},
+        {QStringLiteral("insecure"),  QStringLiteral(":/icons/ms/lock_open.svg")},
+        {QStringLiteral("settings"),  QStringLiteral(":/icons/ms/settings.svg")},
+        {QStringLiteral("profile"),   QStringLiteral(":/icons/ms/account_circle.svg")},
+        {QStringLiteral("win-minimize"), QStringLiteral(":/icons/ms/remove.svg")},
+        {QStringLiteral("win-maximize"), QStringLiteral(":/icons/ms/crop_square.svg")},
+        {QStringLiteral("win-restore"),  QStringLiteral(":/icons/ms/filter_none.svg")},
     };
     return reg;
+}
+
+// Fallbacks to the platform style's own window buttons, used only if the
+// bundled glyph fails to load so the controls are never invisible.
+QStyle::StandardPixmap windowButtonFallback(const QString &name)
+{
+    if (name == QLatin1String("win-minimize"))
+        return QStyle::SP_TitleBarMinButton;
+    if (name == QLatin1String("win-maximize"))
+        return QStyle::SP_TitleBarMaxButton;
+    if (name == QLatin1String("win-restore"))
+        return QStyle::SP_TitleBarNormalButton;
+    if (name == QLatin1String("close"))
+        return QStyle::SP_TitleBarCloseButton;
+    return QStyle::SP_CustomBase;
 }
 
 // The colour toolbar icons should be drawn in, following the active palette so
@@ -95,7 +113,17 @@ QIcon icon(const QString &name)
             return material;
     }
 
-    // Fall back to the user's icon theme, then to the name directly.
+    // Fall back to the platform style's own window buttons (so the title bar is
+    // never left with invisible controls), then to the user's icon theme.
+    const QStyle::StandardPixmap sp = windowButtonFallback(name);
+    if (sp != QStyle::SP_CustomBase) {
+        if (QStyle *style = qApp ? qApp->style() : nullptr) {
+            QIcon fallback = style->standardIcon(sp);
+            if (!fallback.isNull())
+                return fallback;
+        }
+    }
+
     QIcon themed = QIcon::fromTheme(name);
     if (!themed.isNull() && !themed.availableSizes().isEmpty())
         return themed;

@@ -107,6 +107,9 @@ void NavigationToolBar::setLoading(bool loading)
 
 void NavigationToolBar::setBookmarked(bool on)
 {
+    // Fill the star when the page is bookmarked, so there is visible feedback.
+    m_bookmark->setIcon(IconLoader::icon(on ? QStringLiteral("bookmarked")
+                                            : QStringLiteral("bookmark")));
     m_bookmark->setText(on ? tr("Edit bookmark") : tr("Bookmark this page"));
     m_bookmark->setToolTip(on ? tr("Edit bookmark (Ctrl+D)") : tr("Bookmark this page (Ctrl+D)"));
 }
